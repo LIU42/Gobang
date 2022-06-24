@@ -7,9 +7,9 @@
 #define GAME_FPS 10
 #define IMG_FORMAT SDL_PIXELFORMAT_RGBA32
 
-#define FONT_SIZE 18
+#define FONT_SIZE 20
 #define TEXT_RECT_WIDTH 200
-#define TEXT_RECT_HEIGHT 18
+#define TEXT_RECT_HEIGHT 20
 #define TEXT_MAX_LEN 30
 #define TEXT_COLOR { 0, 0, 0 }
 

@@ -60,7 +60,7 @@ IDI_ICON1               ICON                    "Images\\icon.ico"
 // Font
 //
 
-IDR_FONT1               FONT                    "Fonts\\consola.ttf"
+IDR_FONT1               FONT                    "Fonts\\consolab.ttf"
 
 
 /////////////////////////////////////////////////////////////////////////////
