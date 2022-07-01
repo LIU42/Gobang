@@ -2,10 +2,10 @@
 
 using namespace std;
 
-void Player::init(int inputSide, char inputColor)
+void Player::init(int inSide, char inColor)
 {
-	side = inputSide;
-	chessColor = inputColor;
+	side = inSide;
+	chessColor = inColor;
 }
 
 void Player::play(int x, int y)
@@ -16,30 +16,30 @@ void Player::play(int x, int y)
 	game.turnCount += 1;
 }
 
-void Computer::init(int inputSide, char inputColor)
+void AI::init(int inSide, char inColor)
 {
-	side = inputSide;
-	chessColor = inputColor;
+	side = inSide;
+	chessColor = inColor;
 	bestPoint = { 0, 0 };
 	maxScore = 0;
 }
 
-void Computer::identify()
+void AI::identify()
 {
 	for (int line = 0; line < 4; line++)
 	{
-		for (int i = 0; i < game.chessBoardLineData[line].size(); i++)
+		for (int i = 0; i < game.lineData[line].size(); i++)
 		{
-			if (game.chessBoardLineData[line][i] != EMPTY_CHESS && game.chessBoardLineData[line][i] != NOW_CHESS)
+			if (game.lineData[line][i] != EMPTY_CHESS && game.lineData[line][i] != NOW_CHESS)
 			{
-				if (game.chessBoardLineData[line][i] == chessColor) { game.chessBoardLineData[line][i] = SELF_CHESS; }
-				else { game.chessBoardLineData[line][i] = OPPOSITE_CHESS; }
+				if (game.lineData[line][i] == chessColor) { game.lineData[line][i] = SELF_CHESS; }
+				else { game.lineData[line][i] = OPPOSITE_CHESS; }
 			}
 		}
 	}
 }
 
-void Computer::analysis(int x, int y)
+void AI::analysis(int x, int y)
 {
 	int score = 0;
 	int attackFive = 0;
@@ -55,117 +55,117 @@ void Computer::analysis(int x, int y)
 
 	for (int line = 0; line < 4; line++)
 	{
-		if (game.chessBoardLineData[line].find("SSSSN") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SSSNS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SSNSS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SNSSS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NSSSS") != game.chessBoardLineData[line].npos)
+		if (game.lineData[line].find("SSSSN") != game.lineData[line].npos ||
+			game.lineData[line].find("SSSNS") != game.lineData[line].npos ||
+			game.lineData[line].find("SSNSS") != game.lineData[line].npos ||
+			game.lineData[line].find("SNSSS") != game.lineData[line].npos ||
+			game.lineData[line].find("NSSSS") != game.lineData[line].npos)
 		{ attackFive += 1; }
 
-		if (game.chessBoardLineData[line].find("0SSSN0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0SSNS0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0SNSS0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NSSS0") != game.chessBoardLineData[line].npos)
+		if (game.lineData[line].find("0SSSN0") != game.lineData[line].npos ||
+			game.lineData[line].find("0SSNS0") != game.lineData[line].npos ||
+			game.lineData[line].find("0SNSS0") != game.lineData[line].npos ||
+			game.lineData[line].find("0NSSS0") != game.lineData[line].npos)
 		{ doubleFour += 1; }
 
-		if (game.chessBoardLineData[line].find("SSSN0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SSNS0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SNSS0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NSSS0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SSS0N") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SSN0S") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SNS0S") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NSS0S") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SS0SN") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SS0NS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("SN0SS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NS0SS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("S0SSN") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("S0SNS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("S0NSS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("N0SSS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0SSSN") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0SSNS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0SNSS") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NSSS") != game.chessBoardLineData[line].npos)
+		if (game.lineData[line].find("SSSN0") != game.lineData[line].npos ||
+			game.lineData[line].find("SSNS0") != game.lineData[line].npos ||
+			game.lineData[line].find("SNSS0") != game.lineData[line].npos ||
+			game.lineData[line].find("NSSS0") != game.lineData[line].npos ||
+			game.lineData[line].find("SSS0N") != game.lineData[line].npos ||
+			game.lineData[line].find("SSN0S") != game.lineData[line].npos ||
+			game.lineData[line].find("SNS0S") != game.lineData[line].npos ||
+			game.lineData[line].find("NSS0S") != game.lineData[line].npos ||
+			game.lineData[line].find("SS0SN") != game.lineData[line].npos ||
+			game.lineData[line].find("SS0NS") != game.lineData[line].npos ||
+			game.lineData[line].find("SN0SS") != game.lineData[line].npos ||
+			game.lineData[line].find("NS0SS") != game.lineData[line].npos ||
+			game.lineData[line].find("S0SSN") != game.lineData[line].npos ||
+			game.lineData[line].find("S0SNS") != game.lineData[line].npos ||
+			game.lineData[line].find("S0NSS") != game.lineData[line].npos ||
+			game.lineData[line].find("N0SSS") != game.lineData[line].npos ||
+			game.lineData[line].find("0SSSN") != game.lineData[line].npos ||
+			game.lineData[line].find("0SSNS") != game.lineData[line].npos ||
+			game.lineData[line].find("0SNSS") != game.lineData[line].npos ||
+			game.lineData[line].find("0NSSS") != game.lineData[line].npos)
 		{ attackFour += 1; }
 
 		else if (
-			game.chessBoardLineData[line].find("0SSN00") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0SNS00") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NSS00") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("00SSN0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("00SNS0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("00NSS0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0SS0N0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0SN0S0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NS0S0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0S0SN0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0S0NS0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0N0SS0") != game.chessBoardLineData[line].npos)
+			game.lineData[line].find("0SSN00") != game.lineData[line].npos ||
+			game.lineData[line].find("0SNS00") != game.lineData[line].npos ||
+			game.lineData[line].find("0NSS00") != game.lineData[line].npos ||
+			game.lineData[line].find("00SSN0") != game.lineData[line].npos ||
+			game.lineData[line].find("00SNS0") != game.lineData[line].npos ||
+			game.lineData[line].find("00NSS0") != game.lineData[line].npos ||
+			game.lineData[line].find("0SS0N0") != game.lineData[line].npos ||
+			game.lineData[line].find("0SN0S0") != game.lineData[line].npos ||
+			game.lineData[line].find("0NS0S0") != game.lineData[line].npos ||
+			game.lineData[line].find("0S0SN0") != game.lineData[line].npos ||
+			game.lineData[line].find("0S0NS0") != game.lineData[line].npos ||
+			game.lineData[line].find("0N0SS0") != game.lineData[line].npos)
 		{ attackThree += 1; }
 
-		if (game.chessBoardLineData[line].find("OOOON") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("OOONO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("OONOO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("ONOOO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NOOOO") != game.chessBoardLineData[line].npos)
+		if (game.lineData[line].find("OOOON") != game.lineData[line].npos ||
+			game.lineData[line].find("OOONO") != game.lineData[line].npos ||
+			game.lineData[line].find("OONOO") != game.lineData[line].npos ||
+			game.lineData[line].find("ONOOO") != game.lineData[line].npos ||
+			game.lineData[line].find("NOOOO") != game.lineData[line].npos)
 		{ defendFour += 1; }
 
 		else if (
-			game.chessBoardLineData[line].find("0OOON0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NOOO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0OONO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0OO0ON") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NOO0O0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0ONOO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NO0OO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0O0OON") != game.chessBoardLineData[line].npos)
+			game.lineData[line].find("0OOON0") != game.lineData[line].npos ||
+			game.lineData[line].find("0NOOO0") != game.lineData[line].npos ||
+			game.lineData[line].find("0OONO0") != game.lineData[line].npos ||
+			game.lineData[line].find("0OO0ON") != game.lineData[line].npos ||
+			game.lineData[line].find("NOO0O0") != game.lineData[line].npos ||
+			game.lineData[line].find("0ONOO0") != game.lineData[line].npos ||
+			game.lineData[line].find("NO0OO0") != game.lineData[line].npos ||
+			game.lineData[line].find("0O0OON") != game.lineData[line].npos)
 		{ defendThree += 1; }
 
-		if (game.chessBoardLineData[line].find("0SN0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NS0") != game.chessBoardLineData[line].npos)
+		if (game.lineData[line].find("0SN0") != game.lineData[line].npos ||
+			game.lineData[line].find("0NS0") != game.lineData[line].npos)
 		{ attackTwo += 1; }
 
-		if (game.chessBoardLineData[line].find("SN") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NS") != game.chessBoardLineData[line].npos)
+		if (game.lineData[line].find("SN") != game.lineData[line].npos ||
+			game.lineData[line].find("NS") != game.lineData[line].npos)
 		{ linkTwo += 1; }
 
-		if (game.chessBoardLineData[line].find("OOON0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("OONO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("ONOO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NOOO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("OOO0N") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("OON0O") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("ONO0O") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NOO0O") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("OO0ON") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("OO0NO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("ON0OO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("NO0OO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("O0OON") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("O0ONO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("O0NOO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("N0OOO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0OOON") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0OONO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0ONOO") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NOOO") != game.chessBoardLineData[line].npos)
+		if (game.lineData[line].find("OOON0") != game.lineData[line].npos ||
+			game.lineData[line].find("OONO0") != game.lineData[line].npos ||
+			game.lineData[line].find("ONOO0") != game.lineData[line].npos ||
+			game.lineData[line].find("NOOO0") != game.lineData[line].npos ||
+			game.lineData[line].find("OOO0N") != game.lineData[line].npos ||
+			game.lineData[line].find("OON0O") != game.lineData[line].npos ||
+			game.lineData[line].find("ONO0O") != game.lineData[line].npos ||
+			game.lineData[line].find("NOO0O") != game.lineData[line].npos ||
+			game.lineData[line].find("OO0ON") != game.lineData[line].npos ||
+			game.lineData[line].find("OO0NO") != game.lineData[line].npos ||
+			game.lineData[line].find("ON0OO") != game.lineData[line].npos ||
+			game.lineData[line].find("NO0OO") != game.lineData[line].npos ||
+			game.lineData[line].find("O0OON") != game.lineData[line].npos ||
+			game.lineData[line].find("O0ONO") != game.lineData[line].npos ||
+			game.lineData[line].find("O0NOO") != game.lineData[line].npos ||
+			game.lineData[line].find("N0OOO") != game.lineData[line].npos ||
+			game.lineData[line].find("0OOON") != game.lineData[line].npos ||
+			game.lineData[line].find("0OONO") != game.lineData[line].npos ||
+			game.lineData[line].find("0ONOO") != game.lineData[line].npos ||
+			game.lineData[line].find("0NOOO") != game.lineData[line].npos)
 		{ formatFour += 1; }
 
 		else if (
-			game.chessBoardLineData[line].find("0OON00") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0ONO00") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NOO00") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("00OON0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("00ONO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("00NOO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0OO0N0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0ON0O0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0NO0O0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0O0ON0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0O0NO0") != game.chessBoardLineData[line].npos ||
-			game.chessBoardLineData[line].find("0N0OO0") != game.chessBoardLineData[line].npos)
+			game.lineData[line].find("0OON00") != game.lineData[line].npos ||
+			game.lineData[line].find("0ONO00") != game.lineData[line].npos ||
+			game.lineData[line].find("0NOO00") != game.lineData[line].npos ||
+			game.lineData[line].find("00OON0") != game.lineData[line].npos ||
+			game.lineData[line].find("00ONO0") != game.lineData[line].npos ||
+			game.lineData[line].find("00NOO0") != game.lineData[line].npos ||
+			game.lineData[line].find("0OO0N0") != game.lineData[line].npos ||
+			game.lineData[line].find("0ON0O0") != game.lineData[line].npos ||
+			game.lineData[line].find("0NO0O0") != game.lineData[line].npos ||
+			game.lineData[line].find("0O0ON0") != game.lineData[line].npos ||
+			game.lineData[line].find("0O0NO0") != game.lineData[line].npos ||
+			game.lineData[line].find("0N0OO0") != game.lineData[line].npos)
 		{ formatThree += 1; }
 	}
 
@@ -207,7 +207,7 @@ void Computer::analysis(int x, int y)
 	}
 }
 
-void Computer::play()
+void AI::play()
 {
 	Point position = { 0, 0 };
 

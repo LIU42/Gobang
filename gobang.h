@@ -64,7 +64,7 @@ class Game
 	public:
 		Point temp;
 		Point winPoint[5];
-		string chessBoardLineData[4];
+		string lineData[4];
 
 	public:
 		default_random_engine random;
@@ -74,7 +74,7 @@ class Game
 	public:
 		Game();
 		void init();
-		void getChessBoardLineData(int, int);
+		void getLineData(int, int);
 		void gameover();
 		void update();
 		void events();
@@ -94,7 +94,7 @@ class Player
 		void play(int, int);
 };
 
-class Computer : public Player
+class AI : public Player
 {
 	public:
 		Point bestPoint;
@@ -109,6 +109,6 @@ class Computer : public Player
 
 extern Game game;
 extern Window window;
-extern Player player;
-extern Computer computer;
+extern Player userPlayer;
+extern AI aiPlayer;
 #endif

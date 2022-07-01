@@ -4,14 +4,14 @@ using namespace std;
 
 Game game;
 Window window;
-Player player;
-Computer computer;
+Player userPlayer;
+AI aiPlayer;
 
 int main(int argc, char* argv[])
 {
 	Uint32 startTick = 0;
 	Uint32 endTick = 0;
-	Uint32 delta = 0;
+	INT32 delayTick = 0;
 
 	game.init();
 	window.init();
@@ -27,8 +27,9 @@ int main(int argc, char* argv[])
 		game.display();
 
 		endTick = SDL_GetTicks();
-		delta = (1000 / GAME_FPS) - (endTick - startTick);
-		if (delta >= 0 && delta <= (1000 / GAME_FPS)) { SDL_Delay(delta); }
+		delayTick = (1000 / GAME_FPS) - (endTick - startTick);
+
+		SDL_Delay((delayTick > 0) ? delayTick : 0);
 	}
 	window.close();
 	return 0;
