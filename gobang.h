@@ -108,6 +108,6 @@ class AI : public Player
 
 extern Game game;
 extern Window window;
-extern Player userPlayer;
-extern AI aiPlayer;
+extern Player player;
+extern AI ai;
 #endif

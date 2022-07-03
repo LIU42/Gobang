@@ -4,8 +4,8 @@ using namespace std;
 
 Game game;
 Window window;
-Player userPlayer;
-AI aiPlayer;
+Player player;
+AI ai;
 
 int main(int argc, char* argv[])
 {

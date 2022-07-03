@@ -91,13 +91,13 @@ void Game::init()
 
 	if (randP(random))
 	{
-		userPlayer.init(BLACK_SIDE, BLACK_CHESS);
-		aiPlayer.init(WHITE_SIDE, WHITE_CHESS);
+		player.init(BLACK_SIDE, BLACK_CHESS);
+		ai.init(WHITE_SIDE, WHITE_CHESS);
 	}
 	else
 	{
-		userPlayer.init(WHITE_SIDE, WHITE_CHESS);
-		aiPlayer.init(BLACK_SIDE, BLACK_CHESS);
+		player.init(WHITE_SIDE, WHITE_CHESS);
+		ai.init(BLACK_SIDE, BLACK_CHESS);
 	}
 }
 
@@ -179,7 +179,7 @@ void Game::gameover()
 
 void Game::update()
 {
-	if (status == PLAYING && turn == aiPlayer.side)
+	if (status == PLAYING && turn == ai.side)
 	{
 		for (int x = 0; x < TABLE_LARGE; x++)
 		{
@@ -188,12 +188,12 @@ void Game::update()
 				if (chessBoard[x][y] == EMPTY_CHESS)
 				{
 					getLineData(x, y);
-					aiPlayer.identify();
-					aiPlayer.analysis(x, y);
+					ai.identify();
+					ai.analysis(x, y);
 				}
 			}
 		}
-		aiPlayer.play();
+		ai.play();
 		gameover();
 	}
 }
@@ -215,9 +215,9 @@ void Game::events()
 					int x = (int)((mouseX - BORDER - BLOCK * 0.5) / BLOCK);
 					int y = (int)((mouseY - BORDER - BLOCK * 0.5) / BLOCK);
 
-					if (chessBoard[x][y] == EMPTY_CHESS && turn == userPlayer.side)
+					if (chessBoard[x][y] == EMPTY_CHESS && turn == player.side)
 					{
-						userPlayer.play(x, y);
+						player.play(x, y);
 						gameover();
 					}
 				}
@@ -270,12 +270,12 @@ void Game::displayInfo()
 
 	if (status == PLAYING)
 	{
-		if (userPlayer.side == BLACK_SIDE) { SDL_snprintf(text, TEXT_MAX_LEN, "-> You are BLACK"); }
+		if (player.side == BLACK_SIDE) { SDL_snprintf(text, TEXT_MAX_LEN, "-> You are BLACK"); }
 		else { SDL_snprintf(text, TEXT_MAX_LEN, "-> You are WHITE"); }
 	}
 	else if (status == OVER)
 	{
-		if (winner == userPlayer.side) { SDL_snprintf(text, TEXT_MAX_LEN, "-> Winner!"); }
+		if (winner == player.side) { SDL_snprintf(text, TEXT_MAX_LEN, "-> Winner!"); }
 		else { SDL_snprintf(text, TEXT_MAX_LEN, "-> Loser!"); }
 	}
 	window.text(text, BORDER, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
