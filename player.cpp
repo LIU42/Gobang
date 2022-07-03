@@ -90,8 +90,7 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0NSSS") != game.lineData[line].npos)
 		{ attackFour += 1; }
 
-		else if (
-			game.lineData[line].find("0SSN00") != game.lineData[line].npos ||
+		if (game.lineData[line].find("0SSN00") != game.lineData[line].npos ||
 			game.lineData[line].find("0SNS00") != game.lineData[line].npos ||
 			game.lineData[line].find("0NSS00") != game.lineData[line].npos ||
 			game.lineData[line].find("00SSN0") != game.lineData[line].npos ||
@@ -103,7 +102,7 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0S0SN0") != game.lineData[line].npos ||
 			game.lineData[line].find("0S0NS0") != game.lineData[line].npos ||
 			game.lineData[line].find("0N0SS0") != game.lineData[line].npos)
-		{ attackThree += 1; }
+		{ attackThree += (attackFour == 0) ? 1 : 0; }
 
 		if (game.lineData[line].find("OOOON") != game.lineData[line].npos ||
 			game.lineData[line].find("OOONO") != game.lineData[line].npos ||
@@ -112,8 +111,7 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("NOOOO") != game.lineData[line].npos)
 		{ defendFour += 1; }
 
-		else if (
-			game.lineData[line].find("0OOON0") != game.lineData[line].npos ||
+		if (game.lineData[line].find("0OOON0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOOO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0OONO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0OO0ON") != game.lineData[line].npos ||
@@ -121,7 +119,7 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0ONOO0") != game.lineData[line].npos ||
 			game.lineData[line].find("NO0OO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0O0OON") != game.lineData[line].npos)
-		{ defendThree += 1; }
+		{ defendThree += (defendFour == 0) ? 1 : 0; }
 
 		if (game.lineData[line].find("0SN0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NS0") != game.lineData[line].npos)
@@ -153,8 +151,7 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0NOOO") != game.lineData[line].npos)
 		{ formatFour += 1; }
 
-		else if (
-			game.lineData[line].find("0OON00") != game.lineData[line].npos ||
+		if (game.lineData[line].find("0OON00") != game.lineData[line].npos ||
 			game.lineData[line].find("0ONO00") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOO00") != game.lineData[line].npos ||
 			game.lineData[line].find("00OON0") != game.lineData[line].npos ||
@@ -166,7 +163,7 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0O0ON0") != game.lineData[line].npos ||
 			game.lineData[line].find("0O0NO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0N0OO0") != game.lineData[line].npos)
-		{ formatThree += 1; }
+		{ formatThree += (formatFour == 0) ? 1 : 0; }
 	}
 
 	if (attackFive > 0)												{ score = 30; }
