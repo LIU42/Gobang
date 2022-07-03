@@ -170,7 +170,7 @@ void AI::analysis(int x, int y)
 	}
 
 	if (attackFive > 0)												{ score = 30; }
-	else if	(defendFour > 1)										{ score = 29; }
+	else if (defendFour > 1)										{ score = 29; }
 	else if (defendFour > 0 && attackFour > 0)						{ score = 28; }
 	else if (defendFour > 0 && defendThree > 0)						{ score = 27; }
 	else if (defendFour > 0 && attackThree > 0)						{ score = 26; }
