@@ -55,7 +55,6 @@ class Game
 {
 	public:
 		char chessBoard[TABLE_LARGE][TABLE_LARGE];
-		char text[TEXT_MAX_LEN];
 		int status;
 		int turn;
 		int turnCount;

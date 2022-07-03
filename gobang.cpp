@@ -266,6 +266,8 @@ void Game::displayChess()
 
 void Game::displayInfo()
 {
+	static char text[TEXT_MAX_LEN];
+
 	if (status == PLAYING)
 	{
 		if (userPlayer.side == BLACK_SIDE) { SDL_snprintf(text, TEXT_MAX_LEN, "-> You are BLACK"); }
