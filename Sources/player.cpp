@@ -2,10 +2,10 @@
 
 using namespace std;
 
-void Player::init(int inSide, char inColor)
+void Player::init(int side, char color)
 {
-	side = inSide;
-	chessColor = inColor;
+	this->side = side;
+	this->chessColor = color;
 }
 
 void Player::play(int x, int y)
@@ -16,12 +16,13 @@ void Player::play(int x, int y)
 	game.turnCount += 1;
 }
 
-void AI::init(int inSide, char inColor)
+void AI::init(int side, char color)
 {
-	side = inSide;
-	chessColor = inColor;
-	bestPoint = { 0, 0 };
-	maxScore = 0;
+	this->side = side;
+	this->chessColor = color;
+	this->bestPoint = { 0, 0 };
+	this->score = 0;
+	this->maxScore = 0;
 }
 
 void AI::identify()
@@ -32,27 +33,24 @@ void AI::identify()
 		{
 			if (game.lineData[line][i] != EMPTY_CHESS && game.lineData[line][i] != NOW_CHESS)
 			{
-				if (game.lineData[line][i] == chessColor) { game.lineData[line][i] = SELF_CHESS; }
-				else { game.lineData[line][i] = OPPOSITE_CHESS; }
+				switch (bool(game.lineData[line][i] == chessColor))
+				{
+					case true: game.lineData[line][i] = SELF_CHESS; break;
+					case false: game.lineData[line][i] = OPPOSITE_CHESS; break;
+				}
 			}
 		}
 	}
 }
 
-void AI::analysis(int x, int y)
+void AI::clearFormatData()
 {
-	int score = 0;
-	int attackFive = 0;
-	int doubleFour = 0;
-	int attackFour = 0;
-	int defendFour = 0;
-	int formatFour = 0;
-	int attackThree = 0;
-	int defendThree = 0;
-	int formatThree = 0;
-	int attackTwo = 0;
-	int linkTwo = 0;
+	memset(&format, 0, sizeof(format));
+	memset(&score, 0, sizeof(score));
+}
 
+void AI::getFormatData()
+{
 	for (int line = 0; line < 4; line++)
 	{
 		if (game.lineData[line].find("SSSSN") != game.lineData[line].npos ||
@@ -60,14 +58,16 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("SSNSS") != game.lineData[line].npos ||
 			game.lineData[line].find("SNSSS") != game.lineData[line].npos ||
 			game.lineData[line].find("NSSSS") != game.lineData[line].npos)
-		{ attackFive += 1; }
-
+		{
+			format.attackFive += 1;
+		}
 		if (game.lineData[line].find("0SSSN0") != game.lineData[line].npos ||
 			game.lineData[line].find("0SSNS0") != game.lineData[line].npos ||
 			game.lineData[line].find("0SNSS0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NSSS0") != game.lineData[line].npos)
-		{ doubleFour += 1; }
-
+		{
+			format.doubleFour += 1;
+		}
 		if (game.lineData[line].find("SSSN0") != game.lineData[line].npos ||
 			game.lineData[line].find("SSNS0") != game.lineData[line].npos ||
 			game.lineData[line].find("SNSS0") != game.lineData[line].npos ||
@@ -88,8 +88,9 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0SSNS") != game.lineData[line].npos ||
 			game.lineData[line].find("0SNSS") != game.lineData[line].npos ||
 			game.lineData[line].find("0NSSS") != game.lineData[line].npos)
-		{ attackFour += 1; }
-
+		{
+			format.attackFour += 1;
+		}
 		if (game.lineData[line].find("0SSN00") != game.lineData[line].npos ||
 			game.lineData[line].find("0SNS00") != game.lineData[line].npos ||
 			game.lineData[line].find("0NSS00") != game.lineData[line].npos ||
@@ -102,15 +103,17 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0S0SN0") != game.lineData[line].npos ||
 			game.lineData[line].find("0S0NS0") != game.lineData[line].npos ||
 			game.lineData[line].find("0N0SS0") != game.lineData[line].npos)
-		{ attackThree += (attackFour == 0) ? 1 : 0; }
-
+		{
+			format.attackThree += (format.attackFour == 0) ? 1 : 0;
+		}
 		if (game.lineData[line].find("OOOON") != game.lineData[line].npos ||
 			game.lineData[line].find("OOONO") != game.lineData[line].npos ||
 			game.lineData[line].find("OONOO") != game.lineData[line].npos ||
 			game.lineData[line].find("ONOOO") != game.lineData[line].npos ||
 			game.lineData[line].find("NOOOO") != game.lineData[line].npos)
-		{ defendFour += 1; }
-
+		{
+			format.defendFour += 1;
+		}
 		if (game.lineData[line].find("0OOON0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOOO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0OONO0") != game.lineData[line].npos ||
@@ -119,16 +122,19 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0ONOO0") != game.lineData[line].npos ||
 			game.lineData[line].find("NO0OO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0O0OON") != game.lineData[line].npos)
-		{ defendThree += (defendFour == 0) ? 1 : 0; }
-
+		{
+			format.defendThree += (format.defendFour == 0) ? 1 : 0;
+		}
 		if (game.lineData[line].find("0SN0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NS0") != game.lineData[line].npos)
-		{ attackTwo += 1; }
-
+		{
+			format.attackTwo += 1;
+		}
 		if (game.lineData[line].find("SN") != game.lineData[line].npos ||
 			game.lineData[line].find("NS") != game.lineData[line].npos)
-		{ linkTwo += 1; }
-
+		{
+			format.linkTwo += 1;
+		}
 		if (game.lineData[line].find("OOON0") != game.lineData[line].npos ||
 			game.lineData[line].find("OONO0") != game.lineData[line].npos ||
 			game.lineData[line].find("ONOO0") != game.lineData[line].npos ||
@@ -149,8 +155,9 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0OONO") != game.lineData[line].npos ||
 			game.lineData[line].find("0ONOO") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOOO") != game.lineData[line].npos)
-		{ formatFour += 1; }
-
+		{
+			format.formatFour += 1;
+		}
 		if (game.lineData[line].find("0OON00") != game.lineData[line].npos ||
 			game.lineData[line].find("0ONO00") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOO00") != game.lineData[line].npos ||
@@ -163,39 +170,44 @@ void AI::analysis(int x, int y)
 			game.lineData[line].find("0O0ON0") != game.lineData[line].npos ||
 			game.lineData[line].find("0O0NO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0N0OO0") != game.lineData[line].npos)
-		{ formatThree += (formatFour == 0) ? 1 : 0; }
+		{
+			format.formatThree += (format.formatFour == 0) ? 1 : 0;
+		}
 	}
+}
 
-	if (attackFive > 0)												{ score = 30; }
-	else if (defendFour > 1)										{ score = 29; }
-	else if (defendFour > 0 && attackFour > 0)						{ score = 28; }
-	else if (defendFour > 0 && defendThree > 0)						{ score = 27; }
-	else if (defendFour > 0 && attackThree > 0)						{ score = 26; }
-	else if (defendFour > 0)										{ score = 25; }
-	else if (doubleFour > 0)										{ score = 24; }
-	else if (attackFour > 1)										{ score = 23; }
-	else if (attackFour > 0 && attackThree > 0)						{ score = 22; }
-	else if (attackFour > 0 && defendThree > 0)						{ score = 21; }
-	else if (defendThree > 1)										{ score = 20; }
-	else if (defendThree > 0 && formatFour > 1)						{ score = 19; }
-	else if (defendThree > 0 && formatFour > 0 && formatThree > 0)	{ score = 18; }
-	else if (defendThree > 0 && attackThree > 0)					{ score = 17; }
-	else if (defendThree > 0)										{ score = 16; }
-	else if (formatFour > 1)										{ score = 15; }
-	else if (formatFour > 0 && formatThree > 0)						{ score = 14; }
-	else if (attackThree > 1)										{ score = 13; }
-	else if (attackThree > 0 && linkTwo > 2)						{ score = 12; }
-	else if (attackThree > 0 && linkTwo > 1)						{ score = 11; }
-	else if (attackThree > 0 && linkTwo > 0)						{ score = 10; }
-	else if (attackThree > 0)										{ score = 9; }
-	else if (formatThree > 1)										{ score = 8; }
-	else if (attackFour > 0 && linkTwo > 2)							{ score = 7; }
-	else if (attackFour > 0 && linkTwo > 1)							{ score = 6; }
-	else if (attackFour > 0 && linkTwo > 0)							{ score = 5; }
-	else if (attackFour > 0)										{ score = 4; }
-	else if (attackTwo > 2)											{ score = 3; }
-	else if (attackTwo > 1)											{ score = 2; }
-	else if (attackTwo > 0)											{ score = 1; }
+void AI::analysisData(int x, int y)
+{
+	if (format.attackFive > 0)															{ score = 30; }
+	else if (format.defendFour > 1)														{ score = 29; }
+	else if (format.defendFour > 0 && format.attackFour > 0)							{ score = 28; }
+	else if (format.defendFour > 0 && format.defendThree > 0)							{ score = 27; }
+	else if (format.defendFour > 0 && format.attackThree > 0)							{ score = 26; }
+	else if (format.defendFour > 0)														{ score = 25; }
+	else if (format.doubleFour > 0)														{ score = 24; }
+	else if (format.attackFour > 1)														{ score = 23; }
+	else if (format.attackFour > 0 && format.attackThree > 0)							{ score = 22; }
+	else if (format.attackFour > 0 && format.defendThree > 0)							{ score = 21; }
+	else if (format.defendThree > 1)													{ score = 20; }
+	else if (format.defendThree > 0 && format.formatFour > 1)							{ score = 19; }
+	else if (format.defendThree > 0 && format.formatFour > 0 && format.formatThree > 0)	{ score = 18; }
+	else if (format.defendThree > 0 && format.attackThree > 0)							{ score = 17; }
+	else if (format.defendThree > 0)													{ score = 16; }
+	else if (format.formatFour > 1)														{ score = 15; }
+	else if (format.formatFour > 0 && format.formatThree > 0)							{ score = 14; }
+	else if (format.attackThree > 1)													{ score = 13; }
+	else if (format.attackThree > 0 && format.linkTwo > 2)								{ score = 12; }
+	else if (format.attackThree > 0 && format.linkTwo > 1)								{ score = 11; }
+	else if (format.attackThree > 0 && format.linkTwo > 0)								{ score = 10; }
+	else if (format.attackThree > 0)													{ score = 9; }
+	else if (format.formatThree > 1)													{ score = 8; }
+	else if (format.attackFour > 0 && format.linkTwo > 2)								{ score = 7; }
+	else if (format.attackFour > 0 && format.linkTwo > 1)								{ score = 6; }
+	else if (format.attackFour > 0 && format.linkTwo > 0)								{ score = 5; }
+	else if (format.attackFour > 0)														{ score = 4; }
+	else if (format.attackTwo > 2)														{ score = 3; }
+	else if (format.attackTwo > 1)														{ score = 2; }
+	else if (format.attackTwo > 0)														{ score = 1; }
 
 	if (score > maxScore)
 	{
@@ -215,8 +227,8 @@ void AI::play()
 			case BLACK_SIDE: position = { TABLE_LARGE / 2,TABLE_LARGE / 2 }; break;
 			case WHITE_SIDE: do
 			{
-				int x = game.randDev(game.random) + game.temp.x;
-				int y = game.randDev(game.random) + game.temp.y;
+				int x = (rand() % 3) - 1 + game.temp.x;
+				int y = (rand() % 3) - 1 + game.temp.y;
 
 				if (game.chessBoard[x][y] == EMPTY_CHESS && x < TABLE_LARGE && y < TABLE_LARGE && x >= 0 && y >= 0)
 				{

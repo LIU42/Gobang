@@ -2,7 +2,7 @@
 
 using namespace std;
 
-SDL_RWops* Window::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
+SDL_RWops* MainGame::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
 {
 	HRSRC hRsrc = FindResource(hInst, name, type);
 	DWORD size = SizeofResource(hInst, hRsrc);
@@ -10,62 +10,54 @@ SDL_RWops* Window::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
 	return SDL_RWFromConstMem(data, size);
 }
 
-SDL_Surface* Window::loadSurface(DWORD ID)
+SDL_Surface* MainGame::loadSurface(int id)
 {
-	SDL_RWops* src = getResource(hInstance, MAKEINTRESOURCE(ID), TEXT("PNG"));
-	SDL_Surface* originImage = IMG_LoadPNG_RW(src);
-	SDL_Surface* convertImage = SDL_ConvertSurface(originImage, format, NULL);
-	SDL_FreeSurface(originImage);
+	SDL_RWops* src = getResource(hInstance, MAKEINTRESOURCE(id), TEXT("PNG"));
+	SDL_Surface* originSurface = IMG_LoadPNG_RW(src);
+	SDL_Surface* convertSurface = SDL_ConvertSurface(originSurface, image.format, NULL);
+	SDL_FreeSurface(originSurface);
 	SDL_FreeRW(src);
-	return convertImage;
+	return convertSurface;
 }
 
-void Window::text(const char* text, int x, int y)
-{
-	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
-	SDL_Rect textRect = { x, y, TEXT_RECT_WIDTH, TEXT_RECT_HEIGHT };
-	SDL_BlitSurface(textSurface, NULL, surface, &textRect);
-	SDL_FreeSurface(textSurface);
-}
-
-void Window::init()
+void MainGame::initWindow()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	hInstance = GetModuleHandle(0);
 	window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	surface = SDL_GetWindowSurface(window);
-	screenRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-	format = SDL_AllocFormat(IMG_FORMAT);
+	SDL_GetWindowSize(window, &rect.screen.w, &rect.screen.h);
 }
 
-void Window::loadFont()
+void MainGame::loadFont()
 {
 	TTF_Init();
 	font = TTF_OpenFontRW(getResource(hInstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
-void Window::loadImage()
+void MainGame::loadImage()
 {
-	backgroundImg = loadSurface(IDB_PNG3);
-	blackChessImg = loadSurface(IDB_PNG2);
-	whiteChessImg = loadSurface(IDB_PNG4);
-	alertImg = loadSurface(IDB_PNG1);
+	image.format = SDL_AllocFormat(IMG_FORMAT);
+	image.surface = SDL_GetWindowSurface(window);
+	image.background = loadSurface(IDB_PNG3);
+	image.blackChess = loadSurface(IDB_PNG2);
+	image.whiteChess = loadSurface(IDB_PNG4);
+	image.alert = loadSurface(IDB_PNG1);
 }
 
-void Window::freeImage()
+void MainGame::freeImage()
 {
-	SDL_FreeSurface(backgroundImg);
-	SDL_FreeSurface(blackChessImg);
-	SDL_FreeSurface(whiteChessImg);
-	SDL_FreeSurface(alertImg);
+	SDL_FreeFormat(image.format);
+	SDL_FreeSurface(image.background);
+	SDL_FreeSurface(image.blackChess);
+	SDL_FreeSurface(image.whiteChess);
+	SDL_FreeSurface(image.alert);
 }
 
-void Window::freeFont() { TTF_CloseFont(font); }
+void MainGame::freeFont() { TTF_CloseFont(font); }
 
-void Window::close()
+void MainGame::close()
 {
 	SDL_DestroyWindow(window);
-	SDL_FreeFormat(format);
 	freeImage();
 	freeFont();
 	TTF_Quit();
@@ -73,9 +65,7 @@ void Window::close()
 	SDL_Quit();
 }
 
-Game::Game() : random((unsigned)time(NULL)), randDev(-1, 1) {}
-
-void Game::init()
+void MainGame::initGame()
 {
 	for (int x = 0; x < TABLE_LARGE; x++)
 	{
@@ -89,19 +79,14 @@ void Game::init()
 	turnCount = 0;
 	winner = NONE_SIDE;
 
-	if (randP(random))
+	switch (rand() % 2)
 	{
-		player.init(BLACK_SIDE, BLACK_CHESS);
-		ai.init(WHITE_SIDE, WHITE_CHESS);
-	}
-	else
-	{
-		player.init(WHITE_SIDE, WHITE_CHESS);
-		ai.init(BLACK_SIDE, BLACK_CHESS);
+		case 0: player.init(BLACK_SIDE, BLACK_CHESS); ai.init(WHITE_SIDE, WHITE_CHESS); break;
+		case 1: player.init(WHITE_SIDE, WHITE_CHESS); ai.init(BLACK_SIDE, BLACK_CHESS); break;
 	}
 }
 
-void Game::getLineData(int x, int y)
+void MainGame::getLineData(int x, int y)
 {
 	char tempChess = chessBoard[x][y];
 	chessBoard[x][y] = NOW_CHESS;
@@ -125,9 +110,10 @@ void Game::getLineData(int x, int y)
 	chessBoard[x][y] = tempChess;
 }
 
-void Game::gameover()
+void MainGame::gameover()
 {
 	getLineData(temp.x, temp.y);
+
 	for (int line = 0; line < 4; line++)
 	{
 		for (int i = 0; i < lineData[line].size(); i++)
@@ -146,15 +132,10 @@ void Game::gameover()
 
 		if (isBlackWin || isWhiteWin)
 		{
-			if (isBlackWin)
+			switch (isBlackWin)
 			{
-				winner = BLACK_SIDE;
-				position = (int)lineData[line].find("BBBBB");
-			}
-			else
-			{
-				winner = WHITE_SIDE;
-				position = (int)lineData[line].find("WWWWW");
+				case true:  winner = BLACK_SIDE; position = (int)lineData[line].find("BBBBB"); break;
+				case false: winner = WHITE_SIDE; position = (int)lineData[line].find("WWWWW"); break;
 			}
 			switch (line)
 			{
@@ -177,7 +158,7 @@ void Game::gameover()
 	}
 }
 
-void Game::update()
+void MainGame::update()
 {
 	if (status == PLAYING && turn == ai.side)
 	{
@@ -189,7 +170,9 @@ void Game::update()
 				{
 					getLineData(x, y);
 					ai.identify();
-					ai.analysis(x, y);
+					ai.clearFormatData();
+					ai.getFormatData();
+					ai.analysisData(x, y);
 				}
 			}
 		}
@@ -198,22 +181,22 @@ void Game::update()
 	}
 }
 
-void Game::events()
+void MainGame::control()
 {
-	while (SDL_PollEvent(&window.events))
+	while (SDL_PollEvent(&events))
 	{
-		if (window.events.type == SDL_QUIT) { status = EXIT; }
-		if (window.events.type == SDL_MOUSEBUTTONDOWN)
+		if (events.type == SDL_QUIT) { status = EXIT; }
+		if (events.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (status == PLAYING)
 			{
-				int mouseX = window.events.motion.x;
-				int mouseY = window.events.motion.y;
+				int mouseX = events.motion.x;
+				int mouseY = events.motion.y;
 
 				if (mouseX >= REGION_BORDER && mouseX <= SCREEN_WIDTH - REGION_BORDER && mouseY >= REGION_BORDER && mouseY <= SCREEN_WIDTH - REGION_BORDER)
 				{
-					int x = (int)((mouseX - BORDER - BLOCK * 0.5) / BLOCK);
-					int y = (int)((mouseY - BORDER - BLOCK * 0.5) / BLOCK);
+					int x = (int)((mouseX - BORDER - BLOCK / 2) / BLOCK);
+					int y = (int)((mouseY - BORDER - BLOCK / 2) / BLOCK);
 
 					if (chessBoard[x][y] == EMPTY_CHESS && turn == player.side)
 					{
@@ -225,68 +208,82 @@ void Game::events()
 			else if (status == OVER)
 			{
 				status = PLAYING;
-				init();
+				initGame();
 			}
 		}
 	}
 }
 
-void Game::displayChess()
+void MainGame::displayText(const char* text, int x, int y)
 {
-	if (game.status == OVER)
+	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
+	SDL_Rect textRect = { x, y, TEXT_RECT_WIDTH, TEXT_RECT_HEIGHT };
+	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
+	SDL_FreeSurface(textSurface);
+}
+
+void MainGame::displayChess()
+{
+	if (status == OVER)
 	{
 		for (int i = 0; i < 5; i++)
 		{
-			window.blockRect = { BORDER + (int)(BLOCK * (winPoint[i].x + 0.5)), BORDER + (int)(BLOCK * (winPoint[i].y + 0.5)), BLOCK, BLOCK };
-			SDL_BlitSurface(window.alertImg, NULL, window.surface, &window.blockRect);
+			rect.block = { BORDER + (int)(BLOCK * (winPoint[i].x + 0.5)), BORDER + (int)(BLOCK * (winPoint[i].y + 0.5)), BLOCK, BLOCK };
+			SDL_BlitSurface(image.alert, NULL, image.surface, &rect.block);
 		}
 	}
-	else if (game.turnCount != 0)
+	else if (turnCount != 0)
 	{
-		window.blockRect = { BORDER + (int)(BLOCK * (temp.x + 0.5)), BORDER + (int)(BLOCK * (temp.y + 0.5)), BLOCK, BLOCK };
-		SDL_BlitSurface(window.alertImg, NULL, window.surface, &window.blockRect);
+		rect.block = { BORDER + (int)(BLOCK * (temp.x + 0.5)), BORDER + (int)(BLOCK * (temp.y + 0.5)), BLOCK, BLOCK };
+		SDL_BlitSurface(image.alert, NULL, image.surface, &rect.block);
 	}
 	for (int x = 0; x < TABLE_LARGE; x++)
 	{
 		for (int y = 0; y < TABLE_LARGE; y++)
 		{
-			if (game.chessBoard[x][y] == BLACK_CHESS)
+			if (chessBoard[x][y] == BLACK_CHESS)
 			{
-				window.blockRect = { BORDER + (int)(BLOCK * (x + 0.5)), BORDER + (int)(BLOCK * (y + 0.5)), BLOCK, BLOCK };
-				SDL_BlitSurface(window.blackChessImg, NULL, window.surface, &window.blockRect);
+				rect.block = { BORDER + (int)(BLOCK * (x + 0.5)), BORDER + (int)(BLOCK * (y + 0.5)), BLOCK, BLOCK };
+				SDL_BlitSurface(image.blackChess, NULL, image.surface, &rect.block);
 			}
-			else if (game.chessBoard[x][y] == WHITE_CHESS)
+			else if (chessBoard[x][y] == WHITE_CHESS)
 			{
-				window.blockRect = { BORDER + (int)(BLOCK * (x + 0.5)), BORDER + (int)(BLOCK * (y + 0.5)), BLOCK, BLOCK };
-				SDL_BlitSurface(window.whiteChessImg, NULL, window.surface, &window.blockRect);
+				rect.block = { BORDER + (int)(BLOCK * (x + 0.5)), BORDER + (int)(BLOCK * (y + 0.5)), BLOCK, BLOCK };
+				SDL_BlitSurface(image.whiteChess, NULL, image.surface, &rect.block);
 			}
 		}
 	}
 }
 
-void Game::displayInfo()
+void MainGame::displayInfo()
 {
 	static char text[TEXT_MAX_LEN];
 
 	if (status == PLAYING)
 	{
-		if (player.side == BLACK_SIDE) { SDL_snprintf(text, TEXT_MAX_LEN, "-> You are BLACK"); }
-		else { SDL_snprintf(text, TEXT_MAX_LEN, "-> You are WHITE"); }
+		switch (player.side)
+		{
+			case BLACK_SIDE: SDL_snprintf(text, TEXT_MAX_LEN, "-> You are BLACK"); break;
+			case WHITE_SIDE: SDL_snprintf(text, TEXT_MAX_LEN, "-> You are WHITE"); break;
+		}
 	}
 	else if (status == OVER)
 	{
-		if (winner == player.side) { SDL_snprintf(text, TEXT_MAX_LEN, "-> Winner!"); }
-		else { SDL_snprintf(text, TEXT_MAX_LEN, "-> Loser!"); }
+		switch (bool(winner == player.side))
+		{
+			case true: SDL_snprintf(text, TEXT_MAX_LEN, "-> Winner!"); break;
+			case false: SDL_snprintf(text, TEXT_MAX_LEN, "-> Loser!"); break;
+		}
 	}
-	window.text(text, BORDER, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
+	displayText(text, BORDER, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
 	SDL_snprintf(text, TEXT_MAX_LEN, "Turn: %d", game.turnCount);
-	window.text(text, SCREEN_WIDTH - 120, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
+	displayText(text, SCREEN_WIDTH - 120, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
 }
 
-void Game::display()
+void MainGame::display()
 {
-	SDL_BlitSurface(window.backgroundImg, NULL, window.surface, &window.screenRect);
+	SDL_BlitSurface(image.background, NULL, image.surface, &rect.screen);
 	displayChess();
 	displayInfo();
-	SDL_UpdateWindowSurface(window.window);
+	SDL_UpdateWindowSurface(window);
 }

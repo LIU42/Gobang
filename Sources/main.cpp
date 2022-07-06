@@ -2,10 +2,7 @@
 
 using namespace std;
 
-Game game;
-Window window;
-Player player;
-AI ai;
+MainGame game;
 
 int main(int argc, char* argv[])
 {
@@ -13,17 +10,19 @@ int main(int argc, char* argv[])
 	Uint32 endTick = 0;
 	INT32 delayTick = 0;
 
-	game.init();
-	window.init();
-	window.loadImage();
-	window.loadFont();
+	srand((unsigned)time(NULL));
+
+	game.initWindow();
+	game.initGame();
+	game.loadImage();
+	game.loadFont();
 
 	while (game.status != EXIT)
 	{
 		startTick = SDL_GetTicks();
 
 		game.update();
-		game.events();
+		game.control();
 		game.display();
 
 		endTick = SDL_GetTicks();
@@ -31,6 +30,6 @@ int main(int argc, char* argv[])
 
 		SDL_Delay((delayTick > 0) ? delayTick : 0);
 	}
-	window.close();
+	game.close();
 	return 0;
 }
