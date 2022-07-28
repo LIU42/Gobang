@@ -27,7 +27,7 @@ void AI::init(int side, char color)
 
 void AI::identify()
 {
-	for (int line = 0; line < 4; line++)
+	for (int line = 0; line < LINE_COUNT; line++)
 	{
 		for (int i = 0; i < game.lineData[line].size(); i++)
 		{
@@ -51,7 +51,7 @@ void AI::clearFormatData()
 
 void AI::getFormatData()
 {
-	for (int line = 0; line < 4; line++)
+	for (int line = 0; line < LINE_COUNT; line++)
 	{
 		if (game.lineData[line].find("SSSSN") != game.lineData[line].npos ||
 			game.lineData[line].find("SSSNS") != game.lineData[line].npos ||

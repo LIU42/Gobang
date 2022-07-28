@@ -89,8 +89,8 @@ class MainGame
 		Image image;
 		Rect rect;
 		Point temp;
-		Point winPoint[5];
-		string lineData[4];
+		Point winPoint[WIN_CHESS_COUNT];
+		string lineData[LINE_COUNT];
 
 	public:
 		Player player;

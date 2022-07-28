@@ -18,6 +18,9 @@
 #define BORDER 10
 #define REGION_BORDER 25
 
+#define LINE_COUNT 4
+#define WIN_CHESS_COUNT 5
+
 #define PLAYING 0
 #define OVER 1
 #define EXIT 2

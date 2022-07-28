@@ -114,7 +114,7 @@ void MainGame::gameover()
 {
 	getLineData(temp.x, temp.y);
 
-	for (int line = 0; line < 4; line++)
+	for (int line = 0; line < LINE_COUNT; line++)
 	{
 		for (int i = 0; i < lineData[line].size(); i++)
 		{
@@ -124,7 +124,7 @@ void MainGame::gameover()
 			}
 		}
 	}
-	for (int line = 0; line < 4; line++)
+	for (int line = 0; line < LINE_COUNT; line++)
 	{
 		bool isBlackWin = (lineData[line].find("BBBBB") != lineData[line].npos);
 		bool isWhiteWin = (lineData[line].find("WWWWW") != lineData[line].npos);
@@ -139,15 +139,15 @@ void MainGame::gameover()
 			}
 			switch (line)
 			{
-				case 0: for (int i = 0; i < 5; i++) { winPoint[i] = { temp.x, position + i }; } break;
-				case 1: for (int i = 0; i < 5; i++) { winPoint[i] = { position + i, temp.y }; } break;
-				case 2: for (int i = 0; i < 5; i++)
+				case 0: for (int i = 0; i < WIN_CHESS_COUNT; i++) { winPoint[i] = { temp.x, position + i }; } break;
+				case 1: for (int i = 0; i < WIN_CHESS_COUNT; i++) { winPoint[i] = { position + i, temp.y }; } break;
+				case 2: for (int i = 0; i < WIN_CHESS_COUNT; i++)
 				{
 					if (temp.x > temp.y) { winPoint[i] = { position + i + (temp.x - temp.y),position + i }; }
 					else { winPoint[i] = { position + i,position + i + (temp.y - temp.x) }; }
 				} break;
 
-				default: for (int i = 0; i < 5; i++)
+				default: for (int i = 0; i < WIN_CHESS_COUNT; i++)
 				{
 					if (temp.x + temp.y < TABLE_LARGE) { winPoint[i] = { position + i,temp.x + temp.y - position - i }; }
 					else { winPoint[i] = { position + i + temp.x + temp.y - TABLE_LARGE + 1,TABLE_LARGE - position - i - 1 }; }
@@ -226,7 +226,7 @@ void MainGame::displayChess()
 {
 	if (status == OVER)
 	{
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < WIN_CHESS_COUNT; i++)
 		{
 			rect.block = { BORDER + (int)(BLOCK * (winPoint[i].x + 0.5)), BORDER + (int)(BLOCK * (winPoint[i].y + 0.5)), BLOCK, BLOCK };
 			SDL_BlitSurface(image.alert, NULL, image.surface, &rect.block);
