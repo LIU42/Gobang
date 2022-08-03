@@ -235,7 +235,7 @@ void AIPlayer::play()
 				}
 			}
 		}
-		else { position = {TABLE_LARGE / 2, TABLE_LARGE / 2}; }
+		else { position = { TABLE_LARGE / 2, TABLE_LARGE / 2 }; }
 	}
 	else { position = bestPoint; }
 
