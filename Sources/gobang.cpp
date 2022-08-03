@@ -74,16 +74,15 @@ void MainGame::initGame()
 			chessBoard[x][y] = EMPTY_CHESS;
 		}
 	}
-	status = PLAYING;
-	turn = BLACK_SIDE;
-	turnCount = 0;
-	winner = NONE_SIDE;
-
 	switch (rand() % 2)
 	{
 		case 0: player.init(BLACK_SIDE, BLACK_CHESS); ai.init(WHITE_SIDE, WHITE_CHESS); break;
 		case 1: player.init(WHITE_SIDE, WHITE_CHESS); ai.init(BLACK_SIDE, BLACK_CHESS); break;
 	}
+	status = PLAYING;
+	turn = BLACK_SIDE;
+	turnCount = 0;
+	winner = NONE_SIDE;
 }
 
 void MainGame::getLineData(int x, int y)
@@ -99,12 +98,12 @@ void MainGame::getLineData(int x, int y)
 	}
 	switch ((bool)(x > y))
 	{
-		case true: for (int i = 0; i < TABLE_LARGE - (x - y); i++) { lineData[2] += chessBoard[i + x - y][i]; } break;
+		case true:  for (int i = 0; i < TABLE_LARGE - (x - y); i++) { lineData[2] += chessBoard[i + x - y][i]; } break;
 		case false: for (int i = 0; i < TABLE_LARGE - (y - x); i++) { lineData[2] += chessBoard[i][i + y - x]; } break;
 	}
 	switch ((bool)(x + y < TABLE_LARGE))
 	{
-		case true: for (int i = 0; i <= x + y; i++) { lineData[3] += chessBoard[i][x + y - i]; } break;
+		case true:  for (int i = 0; i <= x + y; i++) { lineData[3] += chessBoard[i][x + y - i]; } break;
 		case false: for (int i = x + y - TABLE_LARGE + 1; i < TABLE_LARGE; i++) { lineData[3] += chessBoard[i][x + y - i]; } break;
 	}
 	chessBoard[x][y] = tempChess;
@@ -137,21 +136,22 @@ void MainGame::gameover()
 				case true:  winner = BLACK_SIDE; position = (int)lineData[line].find("BBBBB"); break;
 				case false: winner = WHITE_SIDE; position = (int)lineData[line].find("WWWWW"); break;
 			}
-			switch (line)
+			for (int i = 0; i < WIN_CHESS_COUNT; i++) switch (line)
 			{
-				case 0: for (int i = 0; i < WIN_CHESS_COUNT; i++) { winPoint[i] = { temp.x, position + i }; } break;
-				case 1: for (int i = 0; i < WIN_CHESS_COUNT; i++) { winPoint[i] = { position + i, temp.y }; } break;
-				case 2: for (int i = 0; i < WIN_CHESS_COUNT; i++)
-				{
-					if (temp.x > temp.y) { winPoint[i] = { position + i + (temp.x - temp.y),position + i }; }
-					else { winPoint[i] = { position + i,position + i + (temp.y - temp.x) }; }
-				} break;
+				case 0: winPoint[i] = { temp.x, position + i }; break;
+				case 1: winPoint[i] = { position + i, temp.y }; break;
 
-				default: for (int i = 0; i < WIN_CHESS_COUNT; i++)
+				case 2: switch ((bool)(temp.x > temp.y))
 				{
-					if (temp.x + temp.y < TABLE_LARGE) { winPoint[i] = { position + i,temp.x + temp.y - position - i }; }
-					else { winPoint[i] = { position + i + temp.x + temp.y - TABLE_LARGE + 1,TABLE_LARGE - position - i - 1 }; }
-				} break;
+					case true:  winPoint[i] = { position + i + (temp.x - temp.y), position + i }; break;
+					case false: winPoint[i] = { position + i, position + i + (temp.y - temp.x) }; break;
+				}; break;
+
+				case 3: switch ((bool)(temp.x + temp.y < TABLE_LARGE))
+				{
+					case true:  winPoint[i] = { position + i, temp.x + temp.y - position - i }; break;
+					case false: winPoint[i] = { position + i + temp.x + temp.y - TABLE_LARGE + 1, TABLE_LARGE - position - i - 1 }; break;
+				}; break;
 			}
 			status = OVER;
 		}
@@ -216,8 +216,13 @@ void MainGame::control()
 
 void MainGame::displayText(const char* text, int x, int y)
 {
-	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
-	SDL_Rect textRect = { x, y, TEXT_RECT_WIDTH, TEXT_RECT_HEIGHT };
+	static SDL_Surface* textSurface = nullptr;
+	static SDL_Rect textRect = SDL_Rect();
+
+	textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
+	textRect.x = x;
+	textRect.y = y;
+
 	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
 	SDL_FreeSurface(textSurface);
 }
@@ -271,7 +276,7 @@ void MainGame::displayInfo()
 	{
 		switch (bool(winner == player.side))
 		{
-			case true: SDL_snprintf(text, TEXT_MAX_LEN, "-> Winner!"); break;
+			case true:  SDL_snprintf(text, TEXT_MAX_LEN, "-> Winner!"); break;
 			case false: SDL_snprintf(text, TEXT_MAX_LEN, "-> Loser!"); break;
 		}
 	}

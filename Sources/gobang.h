@@ -21,15 +21,15 @@ struct Point
 
 struct Format
 {
-	int attackFive;
-	int doubleFour;
-	int attackFour;
-	int defendFour;
-	int formatFour;
-	int attackThree;
-	int defendThree;
-	int formatThree;
-	int attackTwo;
+	int rushFive;
+	int aliveFour;
+	int rushFour;
+	int endFour;
+	int preFour;
+	int aliveThree;
+	int endThree;
+	int preThree;
+	int aliveTwo;
 	int linkTwo;
 };
 
@@ -60,7 +60,7 @@ class Player
 		void play(int, int);
 };
 
-class AI : public Player
+class AIPlayer : public Player
 {
 	public:
 		Format format;
@@ -94,7 +94,7 @@ class MainGame
 
 	public:
 		Player player;
-		AI ai;
+		AIPlayer ai;
 
 	public:
 		char chessBoard[TABLE_LARGE][TABLE_LARGE];

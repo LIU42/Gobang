@@ -16,16 +16,15 @@ void Player::play(int x, int y)
 	game.turnCount += 1;
 }
 
-void AI::init(int side, char color)
+void AIPlayer::init(int side, char color)
 {
-	this->side = side;
-	this->chessColor = color;
+	Player::init(side, color);
 	this->bestPoint = { 0, 0 };
 	this->score = 0;
 	this->maxScore = 0;
 }
 
-void AI::identify()
+void AIPlayer::identify()
 {
 	for (int line = 0; line < LINE_COUNT; line++)
 	{
@@ -43,13 +42,13 @@ void AI::identify()
 	}
 }
 
-void AI::clearFormatData()
+void AIPlayer::clearFormatData()
 {
 	memset(&format, 0, sizeof(format));
 	memset(&score, 0, sizeof(score));
 }
 
-void AI::getFormatData()
+void AIPlayer::getFormatData()
 {
 	for (int line = 0; line < LINE_COUNT; line++)
 	{
@@ -59,14 +58,14 @@ void AI::getFormatData()
 			game.lineData[line].find("SNSSS") != game.lineData[line].npos ||
 			game.lineData[line].find("NSSSS") != game.lineData[line].npos)
 		{
-			format.attackFive += 1;
+			format.rushFive += 1;
 		}
 		if (game.lineData[line].find("0SSSN0") != game.lineData[line].npos ||
 			game.lineData[line].find("0SSNS0") != game.lineData[line].npos ||
 			game.lineData[line].find("0SNSS0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NSSS0") != game.lineData[line].npos)
 		{
-			format.doubleFour += 1;
+			format.aliveFour += 1;
 		}
 		if (game.lineData[line].find("SSSN0") != game.lineData[line].npos ||
 			game.lineData[line].find("SSNS0") != game.lineData[line].npos ||
@@ -89,7 +88,7 @@ void AI::getFormatData()
 			game.lineData[line].find("0SNSS") != game.lineData[line].npos ||
 			game.lineData[line].find("0NSSS") != game.lineData[line].npos)
 		{
-			format.attackFour += 1;
+			format.rushFour += 1;
 		}
 		if (game.lineData[line].find("0SSN00") != game.lineData[line].npos ||
 			game.lineData[line].find("0SNS00") != game.lineData[line].npos ||
@@ -104,7 +103,7 @@ void AI::getFormatData()
 			game.lineData[line].find("0S0NS0") != game.lineData[line].npos ||
 			game.lineData[line].find("0N0SS0") != game.lineData[line].npos)
 		{
-			format.attackThree += (format.attackFour == 0) ? 1 : 0;
+			format.aliveThree += (format.rushFour == 0) ? 1 : 0;
 		}
 		if (game.lineData[line].find("OOOON") != game.lineData[line].npos ||
 			game.lineData[line].find("OOONO") != game.lineData[line].npos ||
@@ -112,7 +111,7 @@ void AI::getFormatData()
 			game.lineData[line].find("ONOOO") != game.lineData[line].npos ||
 			game.lineData[line].find("NOOOO") != game.lineData[line].npos)
 		{
-			format.defendFour += 1;
+			format.endFour += 1;
 		}
 		if (game.lineData[line].find("0OOON0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOOO0") != game.lineData[line].npos ||
@@ -123,12 +122,12 @@ void AI::getFormatData()
 			game.lineData[line].find("NO0OO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0O0OON") != game.lineData[line].npos)
 		{
-			format.defendThree += (format.defendFour == 0) ? 1 : 0;
+			format.endThree += (format.endFour == 0) ? 1 : 0;
 		}
 		if (game.lineData[line].find("0SN0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NS0") != game.lineData[line].npos)
 		{
-			format.attackTwo += 1;
+			format.aliveTwo += 1;
 		}
 		if (game.lineData[line].find("SN") != game.lineData[line].npos ||
 			game.lineData[line].find("NS") != game.lineData[line].npos)
@@ -156,7 +155,7 @@ void AI::getFormatData()
 			game.lineData[line].find("0ONOO") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOOO") != game.lineData[line].npos)
 		{
-			format.formatFour += 1;
+			format.preFour += 1;
 		}
 		if (game.lineData[line].find("0OON00") != game.lineData[line].npos ||
 			game.lineData[line].find("0ONO00") != game.lineData[line].npos ||
@@ -171,43 +170,43 @@ void AI::getFormatData()
 			game.lineData[line].find("0O0NO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0N0OO0") != game.lineData[line].npos)
 		{
-			format.formatThree += (format.formatFour == 0) ? 1 : 0;
+			format.preThree += (format.preFour == 0) ? 1 : 0;
 		}
 	}
 }
 
-void AI::analysisData(int x, int y)
+void AIPlayer::analysisData(int x, int y)
 {
-	if (format.attackFive > 0)															{ score = 30; }
-	else if (format.defendFour > 1)														{ score = 29; }
-	else if (format.defendFour > 0 && format.attackFour > 0)							{ score = 28; }
-	else if (format.defendFour > 0 && format.defendThree > 0)							{ score = 27; }
-	else if (format.defendFour > 0 && format.attackThree > 0)							{ score = 26; }
-	else if (format.defendFour > 0)														{ score = 25; }
-	else if (format.doubleFour > 0)														{ score = 24; }
-	else if (format.attackFour > 1)														{ score = 23; }
-	else if (format.attackFour > 0 && format.attackThree > 0)							{ score = 22; }
-	else if (format.attackFour > 0 && format.defendThree > 0)							{ score = 21; }
-	else if (format.defendThree > 1)													{ score = 20; }
-	else if (format.defendThree > 0 && format.formatFour > 1)							{ score = 19; }
-	else if (format.defendThree > 0 && format.formatFour > 0 && format.formatThree > 0)	{ score = 18; }
-	else if (format.defendThree > 0 && format.attackThree > 0)							{ score = 17; }
-	else if (format.defendThree > 0)													{ score = 16; }
-	else if (format.formatFour > 1)														{ score = 15; }
-	else if (format.formatFour > 0 && format.formatThree > 0)							{ score = 14; }
-	else if (format.attackThree > 1)													{ score = 13; }
-	else if (format.attackThree > 0 && format.linkTwo > 2)								{ score = 12; }
-	else if (format.attackThree > 0 && format.linkTwo > 1)								{ score = 11; }
-	else if (format.attackThree > 0 && format.linkTwo > 0)								{ score = 10; }
-	else if (format.attackThree > 0)													{ score = 9; }
-	else if (format.formatThree > 1)													{ score = 8; }
-	else if (format.attackFour > 0 && format.linkTwo > 2)								{ score = 7; }
-	else if (format.attackFour > 0 && format.linkTwo > 1)								{ score = 6; }
-	else if (format.attackFour > 0 && format.linkTwo > 0)								{ score = 5; }
-	else if (format.attackFour > 0)														{ score = 4; }
-	else if (format.attackTwo > 2)														{ score = 3; }
-	else if (format.attackTwo > 1)														{ score = 2; }
-	else if (format.attackTwo > 0)														{ score = 1; }
+	if (format.rushFive > 0)													{ score = 30; }
+	else if (format.endFour > 1)												{ score = 29; }
+	else if (format.endFour > 0 && format.rushFour > 0)							{ score = 28; }
+	else if (format.endFour > 0 && format.endThree > 0)							{ score = 27; }
+	else if (format.endFour > 0 && format.aliveThree > 0)						{ score = 26; }
+	else if (format.endFour > 0)												{ score = 25; }
+	else if (format.aliveFour > 0)												{ score = 24; }
+	else if (format.rushFour > 1)												{ score = 23; }
+	else if (format.rushFour > 0 && format.aliveThree > 0)						{ score = 22; }
+	else if (format.rushFour > 0 && format.endThree > 0)						{ score = 21; }
+	else if (format.endThree > 1)												{ score = 20; }
+	else if (format.endThree > 0 && format.preFour > 1)							{ score = 19; }
+	else if (format.endThree > 0 && format.preFour > 0 && format.preThree > 0)	{ score = 18; }
+	else if (format.endThree > 0 && format.aliveThree > 0)						{ score = 17; }
+	else if (format.endThree > 0)												{ score = 16; }
+	else if (format.preFour > 1)												{ score = 15; }
+	else if (format.preFour > 0 && format.preThree > 0)							{ score = 14; }
+	else if (format.aliveThree > 1)												{ score = 13; }
+	else if (format.aliveThree > 0 && format.linkTwo > 2)						{ score = 12; }
+	else if (format.aliveThree > 0 && format.linkTwo > 1)						{ score = 11; }
+	else if (format.aliveThree > 0 && format.linkTwo > 0)						{ score = 10; }
+	else if (format.aliveThree > 0)												{ score = 9; }
+	else if (format.preThree > 1)												{ score = 8; }
+	else if (format.rushFour > 0 && format.linkTwo > 2)							{ score = 7; }
+	else if (format.rushFour > 0 && format.linkTwo > 1)							{ score = 6; }
+	else if (format.rushFour > 0 && format.linkTwo > 0)							{ score = 5; }
+	else if (format.rushFour > 0)												{ score = 4; }
+	else if (format.aliveTwo > 2)												{ score = 3; }
+	else if (format.aliveTwo > 1)												{ score = 2; }
+	else if (format.aliveTwo > 0)												{ score = 1; }
 
 	if (score > maxScore)
 	{
@@ -216,16 +215,15 @@ void AI::analysisData(int x, int y)
 	}
 }
 
-void AI::play()
+void AIPlayer::play()
 {
 	Point position = { 0, 0 };
 
 	if (maxScore == 0)
 	{
-		switch (side)
+		if (side == WHITE_SIDE)
 		{
-			case BLACK_SIDE: position = { TABLE_LARGE / 2,TABLE_LARGE / 2 }; break;
-			case WHITE_SIDE: do
+			while (true)
 			{
 				int x = (rand() % 3) - 1 + game.temp.x;
 				int y = (rand() % 3) - 1 + game.temp.y;
@@ -235,10 +233,11 @@ void AI::play()
 					position = { x, y };
 					break;
 				}
-			} while (true); break;
+			}
 		}
+		else { position = {TABLE_LARGE / 2, TABLE_LARGE / 2}; }
 	}
-	else { position = { bestPoint.x, bestPoint.y }; }
+	else { position = bestPoint; }
 
 	game.temp = position;
 	game.chessBoard[position.x][position.y] = chessColor;
