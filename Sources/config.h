@@ -8,8 +8,6 @@
 #define IMG_FORMAT SDL_PIXELFORMAT_RGBA32
 
 #define FONT_SIZE 20
-#define TEXT_RECT_WIDTH 0
-#define TEXT_RECT_HEIGHT 0
 #define TEXT_MAX_LEN 30
 #define TEXT_COLOR { 0, 0, 0 }
 

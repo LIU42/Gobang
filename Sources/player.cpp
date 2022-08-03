@@ -217,7 +217,7 @@ void AIPlayer::analysisData(int x, int y)
 
 void AIPlayer::play()
 {
-	Point position = { 0, 0 };
+	static Point position = { 0, 0 };
 
 	if (maxScore == 0)
 	{

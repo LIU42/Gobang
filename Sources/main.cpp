@@ -6,9 +6,9 @@ MainGame game;
 
 int main(int argc, char* argv[])
 {
-	Uint32 startTick = 0;
-	Uint32 endTick = 0;
-	INT32 delayTick = 0;
+	int startTick = 0;
+	int endTick = 0;
+	int delayTick = 0;
 
 	srand((unsigned)time(NULL));
 
