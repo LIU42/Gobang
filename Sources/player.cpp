@@ -50,8 +50,16 @@ void AIPlayer::clearFormatData()
 
 void AIPlayer::getFormatData()
 {
+	static bool isFindRushFour;
+	static bool isFindEndFour;
+	static bool isFindPreFour;
+
 	for (int line = 0; line < LINE_COUNT; line++)
 	{
+		isFindRushFour = false;
+		isFindEndFour = false;
+		isFindPreFour = false;
+
 		if (game.lineData[line].find("SSSSN") != game.lineData[line].npos ||
 			game.lineData[line].find("SSSNS") != game.lineData[line].npos ||
 			game.lineData[line].find("SSNSS") != game.lineData[line].npos ||
@@ -88,7 +96,7 @@ void AIPlayer::getFormatData()
 			game.lineData[line].find("0SNSS") != game.lineData[line].npos ||
 			game.lineData[line].find("0NSSS") != game.lineData[line].npos)
 		{
-			format.rushFour += 1;
+			format.rushFour += 1; isFindRushFour = true;
 		}
 		if (game.lineData[line].find("0SSN00") != game.lineData[line].npos ||
 			game.lineData[line].find("0SNS00") != game.lineData[line].npos ||
@@ -103,7 +111,7 @@ void AIPlayer::getFormatData()
 			game.lineData[line].find("0S0NS0") != game.lineData[line].npos ||
 			game.lineData[line].find("0N0SS0") != game.lineData[line].npos)
 		{
-			format.aliveThree += (format.rushFour == 0) ? 1 : 0;
+			format.aliveThree += (!isFindRushFour) ? 1 : 0;
 		}
 		if (game.lineData[line].find("OOOON") != game.lineData[line].npos ||
 			game.lineData[line].find("OOONO") != game.lineData[line].npos ||
@@ -111,7 +119,7 @@ void AIPlayer::getFormatData()
 			game.lineData[line].find("ONOOO") != game.lineData[line].npos ||
 			game.lineData[line].find("NOOOO") != game.lineData[line].npos)
 		{
-			format.endFour += 1;
+			format.endFour += 1; isFindEndFour = true;
 		}
 		if (game.lineData[line].find("0OOON0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOOO0") != game.lineData[line].npos ||
@@ -122,7 +130,7 @@ void AIPlayer::getFormatData()
 			game.lineData[line].find("NO0OO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0O0OON") != game.lineData[line].npos)
 		{
-			format.endThree += (format.endFour == 0) ? 1 : 0;
+			format.endThree += (!isFindEndFour) ? 1 : 0;
 		}
 		if (game.lineData[line].find("0SN0") != game.lineData[line].npos ||
 			game.lineData[line].find("0NS0") != game.lineData[line].npos)
@@ -155,7 +163,7 @@ void AIPlayer::getFormatData()
 			game.lineData[line].find("0ONOO") != game.lineData[line].npos ||
 			game.lineData[line].find("0NOOO") != game.lineData[line].npos)
 		{
-			format.preFour += 1;
+			format.preFour += 1; isFindPreFour = true;
 		}
 		if (game.lineData[line].find("0OON00") != game.lineData[line].npos ||
 			game.lineData[line].find("0ONO00") != game.lineData[line].npos ||
@@ -170,7 +178,7 @@ void AIPlayer::getFormatData()
 			game.lineData[line].find("0O0NO0") != game.lineData[line].npos ||
 			game.lineData[line].find("0N0OO0") != game.lineData[line].npos)
 		{
-			format.preThree += (format.preFour == 0) ? 1 : 0;
+			format.preThree += (!isFindPreFour) ? 1 : 0;
 		}
 	}
 }
