@@ -1,7 +1,5 @@
 #include "gobang.h"
 
-using namespace std;
-
 SDL_RWops* MainGame::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
 {
 	HRSRC hRsrc = FindResource(hInst, name, type);

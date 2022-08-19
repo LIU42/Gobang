@@ -1,7 +1,5 @@
 #include "gobang.h"
 
-using namespace std;
-
 void Player::init(int side, char color)
 {
 	this->side = side;
