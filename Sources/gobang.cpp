@@ -181,17 +181,17 @@ void MainGame::update()
 	}
 }
 
-void MainGame::control()
+void MainGame::events()
 {
-	while (SDL_PollEvent(&events))
+	while (SDL_PollEvent(&event))
 	{
-		if (events.type == SDL_QUIT) { status = EXIT; }
-		if (events.type == SDL_MOUSEBUTTONDOWN)
+		if (event.type == SDL_QUIT) { status = EXIT; }
+		if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (status == PLAYING)
 			{
-				int mouseX = events.motion.x;
-				int mouseY = events.motion.y;
+				int mouseX = event.motion.x;
+				int mouseY = event.motion.y;
 
 				if (mouseX >= REGION_BORDER && mouseX <= SCREEN_WIDTH - REGION_BORDER && mouseY >= REGION_BORDER && mouseY <= SCREEN_WIDTH - REGION_BORDER)
 				{

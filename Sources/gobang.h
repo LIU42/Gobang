@@ -82,7 +82,7 @@ class MainGame
 	public:
 		HINSTANCE hInstance;
 		SDL_Window* window;
-		SDL_Event events;
+		SDL_Event event;
 		TTF_Font* font;
 
 	public:
@@ -120,7 +120,7 @@ class MainGame
 		void getLineData(Point);
 		void gameover();
 		void update();
-		void control();
+		void events();
 		void displayText(const char*, Point);
 		void displayChess();
 		void displayInfo();
