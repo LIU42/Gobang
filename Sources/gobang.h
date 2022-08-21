@@ -57,7 +57,7 @@ class Player
 
 	public:
 		void init(int, char);
-		void play(int, int);
+		void play(Point);
 };
 
 class AIPlayer : public Player
@@ -73,7 +73,7 @@ class AIPlayer : public Player
 		void identify();
 		void clearFormatData();
 		void getFormatData();
-		void analysisData(int, int);
+		void analysisData(Point);
 		void play();
 };
 
@@ -117,11 +117,11 @@ class MainGame
 		void close();
 
 	public:
-		void getLineData(int, int);
+		void getLineData(Point);
 		void gameover();
 		void update();
 		void control();
-		void displayText(const char*, int, int);
+		void displayText(const char*, Point);
 		void displayChess();
 		void displayInfo();
 		void display();

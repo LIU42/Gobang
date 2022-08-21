@@ -83,33 +83,33 @@ void MainGame::initGame()
 	winner = NONE_SIDE;
 }
 
-void MainGame::getLineData(int x, int y)
+void MainGame::getLineData(Point pos)
 {
-	char tempChess = chessBoard[x][y];
-	chessBoard[x][y] = NOW_CHESS;
+	char tempChess = chessBoard[pos.x][pos.y];
+	chessBoard[pos.x][pos.y] = NOW_CHESS;
 
 	for (int line = 0; line < 4; line++) { lineData[line].clear(); }
 	for (int i = 0; i < TABLE_LARGE; i++)
 	{
-		lineData[0] += chessBoard[x][i];
-		lineData[1] += chessBoard[i][y];
+		lineData[0] += chessBoard[pos.x][i];
+		lineData[1] += chessBoard[i][pos.y];
 	}
-	switch ((bool)(x > y))
+	switch ((bool)(pos.x > pos.y))
 	{
-		case true:  for (int i = 0; i < TABLE_LARGE - (x - y); i++) { lineData[2] += chessBoard[i + x - y][i]; } break;
-		case false: for (int i = 0; i < TABLE_LARGE - (y - x); i++) { lineData[2] += chessBoard[i][i + y - x]; } break;
+		case true:  for (int i = 0; i < TABLE_LARGE - (pos.x - pos.y); i++) { lineData[2] += chessBoard[i + pos.x - pos.y][i]; } break;
+		case false: for (int i = 0; i < TABLE_LARGE - (pos.y - pos.x); i++) { lineData[2] += chessBoard[i][i + pos.y - pos.x]; } break;
 	}
-	switch ((bool)(x + y < TABLE_LARGE))
+	switch ((bool)(pos.x + pos.y < TABLE_LARGE))
 	{
-		case true:  for (int i = 0; i <= x + y; i++) { lineData[3] += chessBoard[i][x + y - i]; } break;
-		case false: for (int i = x + y - TABLE_LARGE + 1; i < TABLE_LARGE; i++) { lineData[3] += chessBoard[i][x + y - i]; } break;
+		case true:  for (int i = 0; i <= pos.x + pos.y; i++) { lineData[3] += chessBoard[i][pos.x + pos.y - i]; } break;
+		case false: for (int i = pos.x + pos.y - TABLE_LARGE + 1; i < TABLE_LARGE; i++) { lineData[3] += chessBoard[i][pos.x + pos.y - i]; } break;
 	}
-	chessBoard[x][y] = tempChess;
+	chessBoard[pos.x][pos.y] = tempChess;
 }
 
 void MainGame::gameover()
 {
-	getLineData(temp.x, temp.y);
+	getLineData(temp);
 
 	for (int line = 0; line < LINE_COUNT; line++)
 	{
@@ -158,19 +158,21 @@ void MainGame::gameover()
 
 void MainGame::update()
 {
+	static Point pos;
+
 	if (status == PLAYING && turn == ai.side)
 	{
-		for (int x = 0; x < TABLE_LARGE; x++)
+		for (pos.x = 0; pos.x < TABLE_LARGE; pos.x++)
 		{
-			for (int y = 0; y < TABLE_LARGE; y++)
+			for (pos.y = 0; pos.y < TABLE_LARGE; pos.y++)
 			{
-				if (chessBoard[x][y] == EMPTY_CHESS)
+				if (chessBoard[pos.x][pos.y] == EMPTY_CHESS)
 				{
-					getLineData(x, y);
+					getLineData(pos);
 					ai.identify();
 					ai.clearFormatData();
 					ai.getFormatData();
-					ai.analysisData(x, y);
+					ai.analysisData(pos);
 				}
 			}
 		}
@@ -193,12 +195,14 @@ void MainGame::control()
 
 				if (mouseX >= REGION_BORDER && mouseX <= SCREEN_WIDTH - REGION_BORDER && mouseY >= REGION_BORDER && mouseY <= SCREEN_WIDTH - REGION_BORDER)
 				{
-					int x = (int)((mouseX - BORDER - BLOCK / 2) / BLOCK);
-					int y = (int)((mouseY - BORDER - BLOCK / 2) / BLOCK);
+					static Point pos;
 
-					if (chessBoard[x][y] == EMPTY_CHESS && turn == player.side)
+					pos.x = (int)((mouseX - BORDER - BLOCK / 2) / BLOCK);
+					pos.y = (int)((mouseY - BORDER - BLOCK / 2) / BLOCK);
+
+					if (chessBoard[pos.x][pos.y] == EMPTY_CHESS && turn == player.side)
 					{
-						player.play(x, y);
+						player.play(pos);
 						gameover();
 					}
 				}
@@ -212,14 +216,14 @@ void MainGame::control()
 	}
 }
 
-void MainGame::displayText(const char* text, int x, int y)
+void MainGame::displayText(const char* text, Point pos)
 {
 	static SDL_Surface* textSurface = nullptr;
 	static SDL_Rect textRect = SDL_Rect();
 
 	textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
-	textRect.x = x;
-	textRect.y = y;
+	textRect.x = pos.x;
+	textRect.y = pos.y;
 
 	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
 	SDL_FreeSurface(textSurface);
@@ -278,9 +282,9 @@ void MainGame::displayInfo()
 			case false: SDL_snprintf(text, TEXT_MAX_LEN, "-> Loser!"); break;
 		}
 	}
-	displayText(text, BORDER, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
+	displayText(text, { BORDER, SCREEN_HEIGHT - (BORDER + FONT_SIZE) });
 	SDL_snprintf(text, TEXT_MAX_LEN, "Turn: %d", game.turnCount);
-	displayText(text, SCREEN_WIDTH - 120, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
+	displayText(text, { SCREEN_WIDTH - 120, SCREEN_HEIGHT - (BORDER + FONT_SIZE) });
 }
 
 void MainGame::display()

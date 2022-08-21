@@ -6,10 +6,10 @@ void Player::init(int side, char color)
 	this->chessColor = color;
 }
 
-void Player::play(int x, int y)
+void Player::play(Point pos)
 {
-	game.temp = { x, y };
-	game.chessBoard[x][y] = chessColor;
+	game.temp = pos;
+	game.chessBoard[pos.x][pos.y] = chessColor;
 	game.turn = -game.turn;
 	game.turnCount += 1;
 }
@@ -181,7 +181,7 @@ void AIPlayer::getFormatData()
 	}
 }
 
-void AIPlayer::analysisData(int x, int y)
+void AIPlayer::analysisData(Point pos)
 {
 	if (format.rushFive > 0)													{ score = 30; }
 	else if (format.endFour > 1)												{ score = 29; }
@@ -217,7 +217,7 @@ void AIPlayer::analysisData(int x, int y)
 	if (score > maxScore)
 	{
 		maxScore = score;
-		bestPoint = { x, y };
+		bestPoint = pos;
 	}
 }
 
