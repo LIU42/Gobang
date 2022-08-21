@@ -284,7 +284,7 @@ void MainGame::displayInfo()
 	}
 	displayText(text, { BORDER, SCREEN_HEIGHT - (BORDER + FONT_SIZE) });
 	SDL_snprintf(text, TEXT_MAX_LEN, "Turn: %d", game.turnCount);
-	displayText(text, { SCREEN_WIDTH - 120, SCREEN_HEIGHT - (BORDER + FONT_SIZE) });
+	displayText(text, { SCREEN_WIDTH - TURN_INFO_LENGTH, SCREEN_HEIGHT - (BORDER + FONT_SIZE) });
 }
 
 void MainGame::display()

@@ -9,6 +9,7 @@
 
 #define FONT_SIZE 20
 #define TEXT_MAX_LEN 30
+#define TURN_INFO_LENGTH 120
 #define TEXT_COLOR { 0, 0, 0 }
 
 #define TABLE_LARGE 19
