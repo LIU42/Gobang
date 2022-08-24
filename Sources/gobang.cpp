@@ -88,7 +88,10 @@ void MainGame::getLineData(Point pos)
 	char tempChess = chessBoard[pos.x][pos.y];
 	chessBoard[pos.x][pos.y] = NOW_CHESS;
 
-	for (int line = 0; line < 4; line++) { lineData[line].clear(); }
+	for (int line = 0; line < LINE_COUNT; line++)
+	{
+		lineData[line].clear();
+	}
 	for (int i = 0; i < TABLE_LARGE; i++)
 	{
 		lineData[0] += chessBoard[pos.x][i];
@@ -218,8 +221,8 @@ void MainGame::events()
 
 void MainGame::displayText(const char* text, Point pos)
 {
-	static SDL_Surface* textSurface = nullptr;
-	static SDL_Rect textRect = SDL_Rect();
+	static SDL_Surface* textSurface;
+	static SDL_Rect textRect;
 
 	textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
 	textRect.x = pos.x;

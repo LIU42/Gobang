@@ -32,7 +32,7 @@ void AIPlayer::identify()
 			{
 				switch (bool(game.lineData[line][i] == chessColor))
 				{
-					case true: game.lineData[line][i] = SELF_CHESS; break;
+					case true:  game.lineData[line][i] = SELF_CHESS; break;
 					case false: game.lineData[line][i] = OPPOSITE_CHESS; break;
 				}
 			}
@@ -223,7 +223,7 @@ void AIPlayer::analysisData(Point pos)
 
 void AIPlayer::play()
 {
-	static Point position = { 0, 0 };
+	static Point position;
 
 	if (maxScore == 0)
 	{
