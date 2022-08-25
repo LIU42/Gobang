@@ -17,9 +17,8 @@ void Player::play(Point pos)
 void AIPlayer::init(int side, char color)
 {
 	Player::init(side, color);
-	this->bestPoint = { 0, 0 };
-	this->score = 0;
-	this->maxScore = 0;
+	score = 0;
+	maxScore = 0;
 }
 
 void AIPlayer::identify()
