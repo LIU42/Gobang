@@ -97,12 +97,12 @@ void MainGame::getLineData(Point pos)
 		lineData[0] += chessBoard[pos.x][i];
 		lineData[1] += chessBoard[i][pos.y];
 	}
-	switch ((bool)(pos.x > pos.y))
+	switch (pos.x > pos.y)
 	{
 		case true:  for (int i = 0; i < TABLE_LARGE - (pos.x - pos.y); i++) { lineData[2] += chessBoard[i + pos.x - pos.y][i]; } break;
 		case false: for (int i = 0; i < TABLE_LARGE - (pos.y - pos.x); i++) { lineData[2] += chessBoard[i][i + pos.y - pos.x]; } break;
 	}
-	switch ((bool)(pos.x + pos.y < TABLE_LARGE))
+	switch (pos.x + pos.y < TABLE_LARGE)
 	{
 		case true:  for (int i = 0; i <= pos.x + pos.y; i++) { lineData[3] += chessBoard[i][pos.x + pos.y - i]; } break;
 		case false: for (int i = pos.x + pos.y - TABLE_LARGE + 1; i < TABLE_LARGE; i++) { lineData[3] += chessBoard[i][pos.x + pos.y - i]; } break;
@@ -179,7 +179,7 @@ void MainGame::update()
 				}
 			}
 		}
-		ai.play();
+		ai.autoPlay();
 		gameover();
 	}
 }
@@ -279,7 +279,7 @@ void MainGame::displayInfo()
 	}
 	else if (status == OVER)
 	{
-		switch (bool(winner == player.side))
+		switch (winner == player.side)
 		{
 			case true:  SDL_snprintf(text, TEXT_MAX_LEN, "-> Winner!"); break;
 			case false: SDL_snprintf(text, TEXT_MAX_LEN, "-> Loser!"); break;

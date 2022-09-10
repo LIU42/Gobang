@@ -74,7 +74,7 @@ class AIPlayer : public Player
 		void clearFormatData();
 		void getFormatData();
 		void analysisData(Point);
-		void play();
+		void autoPlay();
 };
 
 class MainGame
