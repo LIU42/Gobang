@@ -14,14 +14,14 @@ void Player::play(Point pos)
 	game.turnCount += 1;
 }
 
-void AIPlayer::init(int side, char color)
+void PlayerAI::init(int side, char color)
 {
 	Player::init(side, color);
 	score = 0;
 	maxScore = 0;
 }
 
-void AIPlayer::identify()
+void PlayerAI::identify()
 {
 	for (int line = 0; line < LINE_COUNT; line++)
 	{
@@ -39,13 +39,13 @@ void AIPlayer::identify()
 	}
 }
 
-void AIPlayer::clearFormatData()
+void PlayerAI::clearFormatData()
 {
 	memset(&format, 0, sizeof(format));
 	memset(&score, 0, sizeof(score));
 }
 
-void AIPlayer::getFormatData()
+void PlayerAI::getFormatData()
 {
 	static bool isFindRushFour;
 	static bool isFindEndFour;
@@ -180,7 +180,7 @@ void AIPlayer::getFormatData()
 	}
 }
 
-void AIPlayer::analysisData(Point pos)
+void PlayerAI::analysisData(Point pos)
 {
 	if (format.rushFive > 0)													{ score = 30; }
 	else if (format.endFour > 1)												{ score = 29; }
@@ -220,7 +220,7 @@ void AIPlayer::analysisData(Point pos)
 	}
 }
 
-void AIPlayer::autoPlay()
+void PlayerAI::autoPlay()
 {
 	static Point position;
 

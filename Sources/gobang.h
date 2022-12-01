@@ -60,7 +60,7 @@ class Player
 		void play(Point);
 };
 
-class AIPlayer : public Player
+class PlayerAI : public Player
 {
 	public:
 		Format format;
@@ -94,7 +94,7 @@ class MainGame
 
 	public:
 		Player player;
-		AIPlayer ai;
+		PlayerAI ai;
 
 	public:
 		char chessBoard[TABLE_LARGE][TABLE_LARGE];
