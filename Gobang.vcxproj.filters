@@ -15,13 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\gobang.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Sources\resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\player.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\board.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -33,6 +36,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Sources\player.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\board.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

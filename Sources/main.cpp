@@ -1,12 +1,12 @@
 #include "gobang.h"
 
-MainGame game;
-
 int main(int argc, char* argv[])
 {
-	int startTick = 0;
-	int endTick = 0;
-	int delayTick = 0;
+	MainGame game;
+
+	int startTick;
+	int endTick;
+	int delayTick;
 
 	srand((unsigned)time(NULL));
 
@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 	game.loadImage();
 	game.loadFont();
 
-	while (game.status != EXIT)
+	while (game.isRunning())
 	{
 		startTick = SDL_GetTicks();
 
@@ -24,9 +24,9 @@ int main(int argc, char* argv[])
 		game.display();
 
 		endTick = SDL_GetTicks();
-		delayTick = (1000 / GAME_FPS) - (endTick - startTick);
+		delayTick = (1000 / game.FPS) - (endTick - startTick);
 
-		SDL_Delay((delayTick > 0) ? delayTick : 0);
+		SDL_Delay(SDL_max(delayTick, 0));
 	}
 	game.close();
 	return 0;

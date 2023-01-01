@@ -6,32 +6,12 @@
 #include <SDL_ttf.h>
 #include <Windows.h>
 #include <time.h>
-#include <string>
 
-#include "config.h"
+#include "board.h"
+#include "player.h"
 #include "resource.h"
 
-using namespace std;
-
-struct Point
-{
-	int x;
-	int y;
-};
-
-struct Format
-{
-	int rushFive;
-	int aliveFour;
-	int rushFour;
-	int endFour;
-	int preFour;
-	int aliveThree;
-	int endThree;
-	int preThree;
-	int aliveTwo;
-	int linkTwo;
-};
+enum Status { PLAYING, OVER, EXIT };
 
 struct Image
 {
@@ -43,89 +23,68 @@ struct Image
 	SDL_Surface* alert;
 };
 
-struct Rect
-{
-	SDL_Rect screen;
-	SDL_Rect block;
-};
-
-class Player
-{
-	public:
-		int side;
-		char chessColor;
-
-	public:
-		void init(int, char);
-		void play(Point);
-};
-
-class PlayerAI : public Player
-{
-	public:
-		Format format;
-		Point bestPoint;
-		int score;
-		int maxScore;
-
-	public:
-		void init(int, char);
-		void identify();
-		void clearFormatData();
-		void getFormatData();
-		void analysisData(Point);
-		void autoPlay();
-};
-
 class MainGame
 {
 	public:
+		static const int SCREEN_WIDTH = 620;
+		static const int SCREEN_HEIGHT = 650;
+		static const int FPS = 10;
+
+	public:
+		static const int FONT_SIZE = 20;
+		static const int TEXT_LENGTH = 30;
+		static const int TURN_INFO_LENGTH = 120;
+
+	public:
+		static const int BLOCK_SIZE = 30;
+		static const int BORDER = 10;
+		static const int REGION_BORDER = 25;
+
+	private:
 		HINSTANCE hInstance;
 		SDL_Window* window;
+		SDL_Rect screen;
 		SDL_Event event;
 		TTF_Font* font;
 
-	public:
+	private:
 		Image image;
-		Rect rect;
-		Point temp;
-		Point winPoint[WIN_CHESS_COUNT];
-		string lineData[LINE_COUNT];
-
-	public:
+		Board board;
 		Player player;
-		PlayerAI ai;
+		PlayerAI playerAI;
 
-	public:
-		char chessBoard[TABLE_LARGE][TABLE_LARGE];
-		int status;
-		int turn;
+	private:
+		Status status;
+		Side winner;
+		Side turn;
 		int turnCount;
-		int winner;
 
-	public:
+	private:
 		SDL_RWops* getResource(HINSTANCE, LPCWSTR, LPCWSTR);
 		SDL_Surface* loadSurface(int);
 
-	public:
-		void initGame();
-		void initWindow();
-		void loadImage();
-		void loadFont();
+	private:
 		void freeImage();
 		void freeFont();
+		void turnSide();
+		void gameover();
+
+	private:
+		void displayText(const char*, int, int);
+		void displayChess();
+		void displayInfo();
+
+	public:
+		void initWindow();
+		void initGame();
+		void loadImage();
+		void loadFont();
 		void close();
 
 	public:
-		void getLineData(Point);
-		void gameover();
+		bool isRunning();
 		void update();
 		void events();
-		void displayText(const char*, Point);
-		void displayChess();
-		void displayInfo();
 		void display();
 };
-
-extern MainGame game;
 #endif

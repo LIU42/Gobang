@@ -22,8 +22,8 @@ void MainGame::initWindow()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	hInstance = GetModuleHandle(0);
-	window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	SDL_GetWindowSize(window, &rect.screen.w, &rect.screen.h);
+	window = SDL_CreateWindow("Gobang", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	screen = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 }
 
 void MainGame::loadFont()
@@ -34,7 +34,7 @@ void MainGame::loadFont()
 
 void MainGame::loadImage()
 {
-	image.format = SDL_AllocFormat(IMG_FORMAT);
+	image.format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
 	image.surface = SDL_GetWindowSurface(window);
 	image.background = loadSurface(IDB_PNG3);
 	image.blackChess = loadSurface(IDB_PNG2);
@@ -51,7 +51,10 @@ void MainGame::freeImage()
 	SDL_FreeSurface(image.alert);
 }
 
-void MainGame::freeFont() { TTF_CloseFont(font); }
+void MainGame::freeFont()
+{
+	TTF_CloseFont(font);
+}
 
 void MainGame::close()
 {
@@ -65,121 +68,59 @@ void MainGame::close()
 
 void MainGame::initGame()
 {
-	for (int x = 0; x < TABLE_LARGE; x++)
-	{
-		for (int y = 0; y < TABLE_LARGE; y++)
-		{
-			chessBoard[x][y] = EMPTY_CHESS;
-		}
-	}
 	switch (rand() % 2)
 	{
-		case 0: player.init(BLACK_SIDE, BLACK_CHESS); ai.init(WHITE_SIDE, WHITE_CHESS); break;
-		case 1: player.init(WHITE_SIDE, WHITE_CHESS); ai.init(BLACK_SIDE, BLACK_CHESS); break;
+		case 0: player.init(Side::BLACK, Chess::BLACK, &board); playerAI.init(Side::WHITE, Chess::WHITE, &board); break;
+		case 1: player.init(Side::WHITE, Chess::WHITE, &board); playerAI.init(Side::BLACK, Chess::BLACK, &board); break;
 	}
+	board.init();
 	status = PLAYING;
-	turn = BLACK_SIDE;
+	turn = Side::BLACK;
 	turnCount = 0;
-	winner = NONE_SIDE;
+	winner = Side::NOBODY;
 }
 
-void MainGame::getLineData(Point pos)
+bool MainGame::isRunning()
 {
-	char tempChess = chessBoard[pos.x][pos.y];
-	chessBoard[pos.x][pos.y] = NOW_CHESS;
+	return status != EXIT;
+}
 
-	for (int line = 0; line < LINE_COUNT; line++)
+void MainGame::turnSide()
+{
+	switch (turn)
 	{
-		lineData[line].clear();
+		case Side::BLACK: turn = Side::WHITE; break;
+		case Side::WHITE: turn = Side::BLACK; break;
 	}
-	for (int i = 0; i < TABLE_LARGE; i++)
-	{
-		lineData[0] += chessBoard[pos.x][i];
-		lineData[1] += chessBoard[i][pos.y];
-	}
-	switch (pos.x > pos.y)
-	{
-		case true:  for (int i = 0; i < TABLE_LARGE - (pos.x - pos.y); i++) { lineData[2] += chessBoard[i + pos.x - pos.y][i]; } break;
-		case false: for (int i = 0; i < TABLE_LARGE - (pos.y - pos.x); i++) { lineData[2] += chessBoard[i][i + pos.y - pos.x]; } break;
-	}
-	switch (pos.x + pos.y < TABLE_LARGE)
-	{
-		case true:  for (int i = 0; i <= pos.x + pos.y; i++) { lineData[3] += chessBoard[i][pos.x + pos.y - i]; } break;
-		case false: for (int i = pos.x + pos.y - TABLE_LARGE + 1; i < TABLE_LARGE; i++) { lineData[3] += chessBoard[i][pos.x + pos.y - i]; } break;
-	}
-	chessBoard[pos.x][pos.y] = tempChess;
+	turnCount += 1;
 }
 
 void MainGame::gameover()
 {
-	getLineData(temp);
+	int tempX = board.getTempX();
+	int tempY = board.getTempY();
 
-	for (int line = 0; line < LINE_COUNT; line++)
+	LineData lineData = board.getLineData(tempX, tempY, false);
+
+	if (board.isBlackWin(lineData))
 	{
-		for (int i = 0; i < lineData[line].size(); i++)
-		{
-			if (lineData[line][i] == NOW_CHESS)
-			{
-				lineData[line][i] = (turn == WHITE_SIDE) ? BLACK_CHESS : WHITE_CHESS;
-			}
-		}
+		winner = Side::BLACK;
+		status = OVER;
 	}
-	for (int line = 0; line < LINE_COUNT; line++)
+	else if (board.isWhiteWin(lineData))
 	{
-		bool isBlackWin = (lineData[line].find("BBBBB") != lineData[line].npos);
-		bool isWhiteWin = (lineData[line].find("WWWWW") != lineData[line].npos);
-		int position = 0;
-
-		if (isBlackWin || isWhiteWin)
-		{
-			switch (isBlackWin)
-			{
-				case true:  winner = BLACK_SIDE; position = (int)lineData[line].find("BBBBB"); break;
-				case false: winner = WHITE_SIDE; position = (int)lineData[line].find("WWWWW"); break;
-			}
-			for (int i = 0; i < WIN_CHESS_COUNT; i++) switch (line)
-			{
-				case 0: winPoint[i] = { temp.x, position + i }; break;
-				case 1: winPoint[i] = { position + i, temp.y }; break;
-
-				case 2: switch ((bool)(temp.x > temp.y))
-				{
-					case true:  winPoint[i] = { position + i + (temp.x - temp.y), position + i }; break;
-					case false: winPoint[i] = { position + i, position + i + (temp.y - temp.x) }; break;
-				}; break;
-
-				case 3: switch ((bool)(temp.x + temp.y < TABLE_LARGE))
-				{
-					case true:  winPoint[i] = { position + i, temp.x + temp.y - position - i }; break;
-					case false: winPoint[i] = { position + i + temp.x + temp.y - TABLE_LARGE + 1, TABLE_LARGE - position - i - 1 }; break;
-				}; break;
-			}
-			status = OVER;
-		}
+		winner = Side::WHITE;
+		status = OVER;
 	}
 }
 
 void MainGame::update()
 {
-	static Point pos;
-
-	if (status == PLAYING && turn == ai.side)
+	if (status == PLAYING && turn == playerAI.getSide())
 	{
-		for (pos.x = 0; pos.x < TABLE_LARGE; pos.x++)
-		{
-			for (pos.y = 0; pos.y < TABLE_LARGE; pos.y++)
-			{
-				if (chessBoard[pos.x][pos.y] == EMPTY_CHESS)
-				{
-					getLineData(pos);
-					ai.identify();
-					ai.clearFormatData();
-					ai.getFormatData();
-					ai.analysisData(pos);
-				}
-			}
-		}
-		ai.autoPlay();
+		playerAI.analysis();
+		playerAI.play();
+		turnSide();
 		gameover();
 	}
 }
@@ -198,14 +139,13 @@ void MainGame::events()
 
 				if (mouseX >= REGION_BORDER && mouseX <= SCREEN_WIDTH - REGION_BORDER && mouseY >= REGION_BORDER && mouseY <= SCREEN_WIDTH - REGION_BORDER)
 				{
-					static Point pos;
+					int x = (mouseX - BORDER - BLOCK_SIZE / 2) / BLOCK_SIZE;
+					int y = (mouseY - BORDER - BLOCK_SIZE / 2) / BLOCK_SIZE;
 
-					pos.x = (int)((mouseX - BORDER - BLOCK / 2) / BLOCK);
-					pos.y = (int)((mouseY - BORDER - BLOCK / 2) / BLOCK);
-
-					if (chessBoard[pos.x][pos.y] == EMPTY_CHESS && turn == player.side)
+					if (board.getTableData(x, y) == Chess::EMPTY && turn == player.getSide())
 					{
-						player.play(pos);
+						player.play(x, y);
+						turnSide();
 						gameover();
 					}
 				}
@@ -219,47 +159,57 @@ void MainGame::events()
 	}
 }
 
-void MainGame::displayText(const char* text, Point pos)
+void MainGame::displayText(const char* text, int x, int y)
 {
-	static SDL_Surface* textSurface;
-	static SDL_Rect textRect;
+	static SDL_Surface* surface;
+	static SDL_Rect rect;
 
-	textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
-	textRect.x = pos.x;
-	textRect.y = pos.y;
+	surface = TTF_RenderText_Blended(font, text, { 0, 0, 0 });
+	rect.x = x;
+	rect.y = y;
 
-	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
-	SDL_FreeSurface(textSurface);
+	SDL_BlitSurface(surface, NULL, image.surface, &rect);
+	SDL_FreeSurface(surface);
 }
 
 void MainGame::displayChess()
 {
+	static SDL_Rect rect;
+
+	int tempX = board.getTempX();
+	int tempY = board.getTempY();
+
 	if (status == OVER)
 	{
-		for (int i = 0; i < WIN_CHESS_COUNT; i++)
+		LineData lineData = board.getLineData(tempX, tempY, false);
+		WinData winData = board.getWinData(lineData);
+
+		for (int i = 0; i < board.WIN_CHESS_COUNT; i++)
 		{
-			rect.block = { BORDER + (int)(BLOCK * (winPoint[i].x + 0.5)), BORDER + (int)(BLOCK * (winPoint[i].y + 0.5)), BLOCK, BLOCK };
-			SDL_BlitSurface(image.alert, NULL, image.surface, &rect.block);
+			rect.x = BORDER + (int)(BLOCK_SIZE * (winData[i].x + 0.5));
+			rect.y = BORDER + (int)(BLOCK_SIZE * (winData[i].y + 0.5));
+
+			SDL_BlitSurface(image.alert, NULL, image.surface, &rect);
 		}
 	}
 	else if (turnCount != 0)
 	{
-		rect.block = { BORDER + (int)(BLOCK * (temp.x + 0.5)), BORDER + (int)(BLOCK * (temp.y + 0.5)), BLOCK, BLOCK };
-		SDL_BlitSurface(image.alert, NULL, image.surface, &rect.block);
+		rect.x = BORDER + (int)(BLOCK_SIZE * (tempX + 0.5));
+		rect.y = BORDER + (int)(BLOCK_SIZE * (tempY + 0.5));
+
+		SDL_BlitSurface(image.alert, NULL, image.surface, &rect);
 	}
-	for (int x = 0; x < TABLE_LARGE; x++)
+	for (int x = 0; x < board.LARGE; x++)
 	{
-		for (int y = 0; y < TABLE_LARGE; y++)
+		for (int y = 0; y < board.LARGE; y++)
 		{
-			if (chessBoard[x][y] == BLACK_CHESS)
+			rect.x = BORDER + (int)(BLOCK_SIZE * (x + 0.5));
+			rect.y = BORDER + (int)(BLOCK_SIZE * (y + 0.5));
+
+			switch (board.getTableData(x, y))
 			{
-				rect.block = { BORDER + (int)(BLOCK * (x + 0.5)), BORDER + (int)(BLOCK * (y + 0.5)), BLOCK, BLOCK };
-				SDL_BlitSurface(image.blackChess, NULL, image.surface, &rect.block);
-			}
-			else if (chessBoard[x][y] == WHITE_CHESS)
-			{
-				rect.block = { BORDER + (int)(BLOCK * (x + 0.5)), BORDER + (int)(BLOCK * (y + 0.5)), BLOCK, BLOCK };
-				SDL_BlitSurface(image.whiteChess, NULL, image.surface, &rect.block);
+				case Chess::BLACK: SDL_BlitSurface(image.blackChess, NULL, image.surface, &rect); break;
+				case Chess::WHITE: SDL_BlitSurface(image.whiteChess, NULL, image.surface, &rect); break;
 			}
 		}
 	}
@@ -267,32 +217,32 @@ void MainGame::displayChess()
 
 void MainGame::displayInfo()
 {
-	static char text[TEXT_MAX_LEN];
+	static char text[TEXT_LENGTH];
 
 	if (status == PLAYING)
 	{
-		switch (player.side)
+		switch (player.getSide())
 		{
-			case BLACK_SIDE: SDL_snprintf(text, TEXT_MAX_LEN, "-> You are BLACK"); break;
-			case WHITE_SIDE: SDL_snprintf(text, TEXT_MAX_LEN, "-> You are WHITE"); break;
+			case Side::BLACK: SDL_snprintf(text, TEXT_LENGTH, "-> You are BLACK"); break;
+			case Side::WHITE: SDL_snprintf(text, TEXT_LENGTH, "-> You are WHITE"); break;
 		}
 	}
 	else if (status == OVER)
 	{
-		switch (winner == player.side)
+		switch (winner == player.getSide())
 		{
-			case true:  SDL_snprintf(text, TEXT_MAX_LEN, "-> Winner!"); break;
-			case false: SDL_snprintf(text, TEXT_MAX_LEN, "-> Loser!"); break;
+			case true:  SDL_snprintf(text, TEXT_LENGTH, "-> Winner!"); break;
+			case false: SDL_snprintf(text, TEXT_LENGTH, "-> Loser!"); break;
 		}
 	}
-	displayText(text, { BORDER, SCREEN_HEIGHT - (BORDER + FONT_SIZE) });
-	SDL_snprintf(text, TEXT_MAX_LEN, "Turn: %d", game.turnCount);
-	displayText(text, { SCREEN_WIDTH - TURN_INFO_LENGTH, SCREEN_HEIGHT - (BORDER + FONT_SIZE) });
+	displayText(text, BORDER, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
+	SDL_snprintf(text, TEXT_LENGTH, "Turn: %d", turnCount);
+	displayText(text, SCREEN_WIDTH - TURN_INFO_LENGTH, SCREEN_HEIGHT - (BORDER + FONT_SIZE));
 }
 
 void MainGame::display()
 {
-	SDL_BlitSurface(image.background, NULL, image.surface, &rect.screen);
+	SDL_BlitSurface(image.background, NULL, image.surface, &screen);
 	displayChess();
 	displayInfo();
 	SDL_UpdateWindowSurface(window);

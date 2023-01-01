@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\config.h" />
+    <ClInclude Include="Sources\board.h" />
     <ClInclude Include="Sources\gobang.h" />
+    <ClInclude Include="Sources\player.h" />
     <ClInclude Include="Sources\resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\board.cpp" />
     <ClCompile Include="Sources\gobang.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\player.cpp" />
