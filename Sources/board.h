@@ -23,13 +23,13 @@ struct Point
 };
 
 typedef vector <string> LineData;
-typedef vector <Point> WinData;
+typedef vector <Point> LinkData;
 
 class Board
 {
 	public:
 		static const int LARGE = 19;
-		static const int WIN_CHESS_COUNT = 5;
+		static const int LINK_COUNT = 5;
 		static const int LINE_COUNT = 4;
 
 	private:
@@ -52,6 +52,6 @@ class Board
 	public:
 		Chess getTableData(int, int);
 		LineData getLineData(int, int, bool);
-		WinData getWinData(LineData&);
+		LinkData getLinkData(LineData&);
 };
 #endif

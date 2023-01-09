@@ -24,7 +24,7 @@ class Player
 	protected:
 		Side side;
 		Chess chess;
-		Board* boardPtr;
+		Board* pBoard;
 
 	public:
 		void init(Side, Chess, Board*);

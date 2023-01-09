@@ -30,9 +30,9 @@ int Board::getTempY()
 
 bool Board::isBlackWin(LineData& lineData)
 {
-	for (int line = 0; line < LINE_COUNT; line++)
+	for (string line : lineData)
 	{
-		if (lineData[line].find("BBBBB") != lineData[line].npos)
+		if (line.find("BBBBB") != line.npos)
 		{
 			return true;
 		}
@@ -42,9 +42,9 @@ bool Board::isBlackWin(LineData& lineData)
 
 bool Board::isWhiteWin(LineData& lineData)
 {
-	for (int line = 0; line < LINE_COUNT; line++)
+	for (string line : lineData)
 	{
-		if (lineData[line].find("WWWWW") != lineData[line].npos)
+		if (line.find("WWWWW") != line.npos)
 		{
 			return true;
 		}
@@ -92,9 +92,9 @@ LineData Board::getLineData(int x, int y, bool isNeedNowFlag)
 	return lineData;
 }
 
-WinData Board::getWinData(LineData& lineData)
+LinkData Board::getLinkData(LineData& lineData)
 {
-	WinData winData(WIN_CHESS_COUNT);
+	LinkData linkData(LINK_COUNT);
 
 	int x = tempPoint.x;
 	int y = tempPoint.y;
@@ -115,24 +115,24 @@ WinData Board::getWinData(LineData& lineData)
 			case true:  winInit = (int)lineData[line].find("BBBBB"); break;
 			case false: winInit = (int)lineData[line].find("WWWWW"); break;
 		}
-		for (int i = 0; i < WIN_CHESS_COUNT; i++) switch (line)
+		for (int i = 0; i < LINK_COUNT; i++) switch (line)
 		{
-			case 0: winData[i] = { x, winInit + i }; break;
-			case 1: winData[i] = { winInit + i, y }; break;
+			case 0: linkData[i] = { x, winInit + i }; break;
+			case 1: linkData[i] = { winInit + i, y }; break;
 
 			case 2: switch (x > y)
 			{
-				case true:  winData[i] = { winInit + i + (x - y), winInit + i }; break;
-				case false: winData[i] = { winInit + i, winInit + i + (y - x) }; break;
+				case true:  linkData[i] = { winInit + i + (x - y), winInit + i }; break;
+				case false: linkData[i] = { winInit + i, winInit + i + (y - x) }; break;
 			}; break;
 
 			case 3: switch (x + y < LARGE)
 			{
-				case true:  winData[i] = { winInit + i, x + y - winInit - i }; break;
-				case false: winData[i] = { winInit + i + x + y - LARGE + 1, LARGE - winInit - i - 1 }; break;
+				case true:  linkData[i] = { winInit + i, x + y - winInit - i }; break;
+				case false: linkData[i] = { winInit + i + x + y - LARGE + 1, LARGE - winInit - i - 1 }; break;
 			}; break;
 		}
 		break;
 	}
-	return winData;
+	return linkData;
 }

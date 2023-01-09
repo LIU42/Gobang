@@ -1,15 +1,15 @@
 #include "player.h"
 
-void Player::init(Side side, Chess chess, Board* boardPtr)
+void Player::init(Side side, Chess chess, Board* pBoard)
 {
 	this->side = side;
 	this->chess = chess;
-	this->boardPtr = boardPtr;
+	this->pBoard = pBoard;
 }
 
 void Player::play(int x, int y)
 {
-	boardPtr->play(chess, x, y);
+	pBoard->play(chess, x, y);
 }
 
 Side Player::getSide()
@@ -17,9 +17,9 @@ Side Player::getSide()
 	return side;
 }
 
-void PlayerAI::init(Side side, Chess chess, Board* boardPtr)
+void PlayerAI::init(Side side, Chess chess, Board* pBoard)
 {
-	Player::init(side, chess, boardPtr);
+	Player::init(side, chess, pBoard);
 	maxScore = 0;
 }
 
@@ -48,129 +48,129 @@ void PlayerAI::clearFormatData()
 
 void PlayerAI::getFormatData(LineData& lineData)
 {
-	for (int line = 0; line < Board::LINE_COUNT; line++)
+	for (string line : lineData)
 	{
 		bool isFindRushFour = false;
 		bool isFindEndFour = false;
 		bool isFindPreFour = false;
 
-		if (lineData[line].find("SSSSN") != lineData[line].npos ||
-			lineData[line].find("SSSNS") != lineData[line].npos ||
-			lineData[line].find("SSNSS") != lineData[line].npos ||
-			lineData[line].find("SNSSS") != lineData[line].npos ||
-			lineData[line].find("NSSSS") != lineData[line].npos)
+		if (line.find("SSSSN") != line.npos ||
+			line.find("SSSNS") != line.npos ||
+			line.find("SSNSS") != line.npos ||
+			line.find("SNSSS") != line.npos ||
+			line.find("NSSSS") != line.npos)
 		{
 			format.rushFive += 1;
 		}
-		if (lineData[line].find("0SSSN0") != lineData[line].npos ||
-			lineData[line].find("0SSNS0") != lineData[line].npos ||
-			lineData[line].find("0SNSS0") != lineData[line].npos ||
-			lineData[line].find("0NSSS0") != lineData[line].npos)
+		if (line.find("0SSSN0") != line.npos ||
+			line.find("0SSNS0") != line.npos ||
+			line.find("0SNSS0") != line.npos ||
+			line.find("0NSSS0") != line.npos)
 		{
 			format.aliveFour += 1;
 		}
-		if (lineData[line].find("SSSN0") != lineData[line].npos ||
-			lineData[line].find("SSNS0") != lineData[line].npos ||
-			lineData[line].find("SNSS0") != lineData[line].npos ||
-			lineData[line].find("NSSS0") != lineData[line].npos ||
-			lineData[line].find("SSS0N") != lineData[line].npos ||
-			lineData[line].find("SSN0S") != lineData[line].npos ||
-			lineData[line].find("SNS0S") != lineData[line].npos ||
-			lineData[line].find("NSS0S") != lineData[line].npos ||
-			lineData[line].find("SS0SN") != lineData[line].npos ||
-			lineData[line].find("SS0NS") != lineData[line].npos ||
-			lineData[line].find("SN0SS") != lineData[line].npos ||
-			lineData[line].find("NS0SS") != lineData[line].npos ||
-			lineData[line].find("S0SSN") != lineData[line].npos ||
-			lineData[line].find("S0SNS") != lineData[line].npos ||
-			lineData[line].find("S0NSS") != lineData[line].npos ||
-			lineData[line].find("N0SSS") != lineData[line].npos ||
-			lineData[line].find("0SSSN") != lineData[line].npos ||
-			lineData[line].find("0SSNS") != lineData[line].npos ||
-			lineData[line].find("0SNSS") != lineData[line].npos ||
-			lineData[line].find("0NSSS") != lineData[line].npos)
+		if (line.find("SSSN0") != line.npos ||
+			line.find("SSNS0") != line.npos ||
+			line.find("SNSS0") != line.npos ||
+			line.find("NSSS0") != line.npos ||
+			line.find("SSS0N") != line.npos ||
+			line.find("SSN0S") != line.npos ||
+			line.find("SNS0S") != line.npos ||
+			line.find("NSS0S") != line.npos ||
+			line.find("SS0SN") != line.npos ||
+			line.find("SS0NS") != line.npos ||
+			line.find("SN0SS") != line.npos ||
+			line.find("NS0SS") != line.npos ||
+			line.find("S0SSN") != line.npos ||
+			line.find("S0SNS") != line.npos ||
+			line.find("S0NSS") != line.npos ||
+			line.find("N0SSS") != line.npos ||
+			line.find("0SSSN") != line.npos ||
+			line.find("0SSNS") != line.npos ||
+			line.find("0SNSS") != line.npos ||
+			line.find("0NSSS") != line.npos)
 		{
 			format.rushFour += 1; isFindRushFour = true;
 		}
-		if (lineData[line].find("0SSN00") != lineData[line].npos ||
-			lineData[line].find("0SNS00") != lineData[line].npos ||
-			lineData[line].find("0NSS00") != lineData[line].npos ||
-			lineData[line].find("00SSN0") != lineData[line].npos ||
-			lineData[line].find("00SNS0") != lineData[line].npos ||
-			lineData[line].find("00NSS0") != lineData[line].npos ||
-			lineData[line].find("0SS0N0") != lineData[line].npos ||
-			lineData[line].find("0SN0S0") != lineData[line].npos ||
-			lineData[line].find("0NS0S0") != lineData[line].npos ||
-			lineData[line].find("0S0SN0") != lineData[line].npos ||
-			lineData[line].find("0S0NS0") != lineData[line].npos ||
-			lineData[line].find("0N0SS0") != lineData[line].npos)
+		if (line.find("0SSN00") != line.npos ||
+			line.find("0SNS00") != line.npos ||
+			line.find("0NSS00") != line.npos ||
+			line.find("00SSN0") != line.npos ||
+			line.find("00SNS0") != line.npos ||
+			line.find("00NSS0") != line.npos ||
+			line.find("0SS0N0") != line.npos ||
+			line.find("0SN0S0") != line.npos ||
+			line.find("0NS0S0") != line.npos ||
+			line.find("0S0SN0") != line.npos ||
+			line.find("0S0NS0") != line.npos ||
+			line.find("0N0SS0") != line.npos)
 		{
 			format.aliveThree += (!isFindRushFour) ? 1 : 0;
 		}
-		if (lineData[line].find("OOOON") != lineData[line].npos ||
-			lineData[line].find("OOONO") != lineData[line].npos ||
-			lineData[line].find("OONOO") != lineData[line].npos ||
-			lineData[line].find("ONOOO") != lineData[line].npos ||
-			lineData[line].find("NOOOO") != lineData[line].npos)
+		if (line.find("OOOON") != line.npos ||
+			line.find("OOONO") != line.npos ||
+			line.find("OONOO") != line.npos ||
+			line.find("ONOOO") != line.npos ||
+			line.find("NOOOO") != line.npos)
 		{
 			format.endFour += 1; isFindEndFour = true;
 		}
-		if (lineData[line].find("0OOON0") != lineData[line].npos ||
-			lineData[line].find("0NOOO0") != lineData[line].npos ||
-			lineData[line].find("0OONO0") != lineData[line].npos ||
-			lineData[line].find("0OO0ON") != lineData[line].npos ||
-			lineData[line].find("NOO0O0") != lineData[line].npos ||
-			lineData[line].find("0ONOO0") != lineData[line].npos ||
-			lineData[line].find("NO0OO0") != lineData[line].npos ||
-			lineData[line].find("0O0OON") != lineData[line].npos)
+		if (line.find("0OOON0") != line.npos ||
+			line.find("0NOOO0") != line.npos ||
+			line.find("0OONO0") != line.npos ||
+			line.find("0OO0ON") != line.npos ||
+			line.find("NOO0O0") != line.npos ||
+			line.find("0ONOO0") != line.npos ||
+			line.find("NO0OO0") != line.npos ||
+			line.find("0O0OON") != line.npos)
 		{
 			format.endThree += (!isFindEndFour) ? 1 : 0;
 		}
-		if (lineData[line].find("0SN0") != lineData[line].npos ||
-			lineData[line].find("0NS0") != lineData[line].npos)
+		if (line.find("0SN0") != line.npos ||
+			line.find("0NS0") != line.npos)
 		{
 			format.aliveTwo += 1;
 		}
-		if (lineData[line].find("SN") != lineData[line].npos ||
-			lineData[line].find("NS") != lineData[line].npos)
+		if (line.find("SN") != line.npos ||
+			line.find("NS") != line.npos)
 		{
 			format.linkTwo += 1;
 		}
-		if (lineData[line].find("OOON0") != lineData[line].npos ||
-			lineData[line].find("OONO0") != lineData[line].npos ||
-			lineData[line].find("ONOO0") != lineData[line].npos ||
-			lineData[line].find("NOOO0") != lineData[line].npos ||
-			lineData[line].find("OOO0N") != lineData[line].npos ||
-			lineData[line].find("OON0O") != lineData[line].npos ||
-			lineData[line].find("ONO0O") != lineData[line].npos ||
-			lineData[line].find("NOO0O") != lineData[line].npos ||
-			lineData[line].find("OO0ON") != lineData[line].npos ||
-			lineData[line].find("OO0NO") != lineData[line].npos ||
-			lineData[line].find("ON0OO") != lineData[line].npos ||
-			lineData[line].find("NO0OO") != lineData[line].npos ||
-			lineData[line].find("O0OON") != lineData[line].npos ||
-			lineData[line].find("O0ONO") != lineData[line].npos ||
-			lineData[line].find("O0NOO") != lineData[line].npos ||
-			lineData[line].find("N0OOO") != lineData[line].npos ||
-			lineData[line].find("0OOON") != lineData[line].npos ||
-			lineData[line].find("0OONO") != lineData[line].npos ||
-			lineData[line].find("0ONOO") != lineData[line].npos ||
-			lineData[line].find("0NOOO") != lineData[line].npos)
+		if (line.find("OOON0") != line.npos ||
+			line.find("OONO0") != line.npos ||
+			line.find("ONOO0") != line.npos ||
+			line.find("NOOO0") != line.npos ||
+			line.find("OOO0N") != line.npos ||
+			line.find("OON0O") != line.npos ||
+			line.find("ONO0O") != line.npos ||
+			line.find("NOO0O") != line.npos ||
+			line.find("OO0ON") != line.npos ||
+			line.find("OO0NO") != line.npos ||
+			line.find("ON0OO") != line.npos ||
+			line.find("NO0OO") != line.npos ||
+			line.find("O0OON") != line.npos ||
+			line.find("O0ONO") != line.npos ||
+			line.find("O0NOO") != line.npos ||
+			line.find("N0OOO") != line.npos ||
+			line.find("0OOON") != line.npos ||
+			line.find("0OONO") != line.npos ||
+			line.find("0ONOO") != line.npos ||
+			line.find("0NOOO") != line.npos)
 		{
 			format.preFour += 1; isFindPreFour = true;
 		}
-		if (lineData[line].find("0OON00") != lineData[line].npos ||
-			lineData[line].find("0ONO00") != lineData[line].npos ||
-			lineData[line].find("0NOO00") != lineData[line].npos ||
-			lineData[line].find("00OON0") != lineData[line].npos ||
-			lineData[line].find("00ONO0") != lineData[line].npos ||
-			lineData[line].find("00NOO0") != lineData[line].npos ||
-			lineData[line].find("0OO0N0") != lineData[line].npos ||
-			lineData[line].find("0ON0O0") != lineData[line].npos ||
-			lineData[line].find("0NO0O0") != lineData[line].npos ||
-			lineData[line].find("0O0ON0") != lineData[line].npos ||
-			lineData[line].find("0O0NO0") != lineData[line].npos ||
-			lineData[line].find("0N0OO0") != lineData[line].npos)
+		if (line.find("0OON00") != line.npos ||
+			line.find("0ONO00") != line.npos ||
+			line.find("0NOO00") != line.npos ||
+			line.find("00OON0") != line.npos ||
+			line.find("00ONO0") != line.npos ||
+			line.find("00NOO0") != line.npos ||
+			line.find("0OO0N0") != line.npos ||
+			line.find("0ON0O0") != line.npos ||
+			line.find("0NO0O0") != line.npos ||
+			line.find("0O0ON0") != line.npos ||
+			line.find("0O0NO0") != line.npos ||
+			line.find("0N0OO0") != line.npos)
 		{
 			format.preThree += (!isFindPreFour) ? 1 : 0;
 		}
@@ -226,9 +226,9 @@ void PlayerAI::analysis()
 	{
 		for (int y = 0; y < Board::LARGE; y++)
 		{
-			if (boardPtr->getTableData(x, y) == Chess::EMPTY)
+			if (pBoard->getTableData(x, y) == Chess::EMPTY)
 			{
-				LineData lineData = boardPtr->getLineData(x, y, true);
+				LineData lineData = pBoard->getLineData(x, y, true);
 
 				identify(lineData);
 				clearFormatData();
@@ -247,19 +247,19 @@ void PlayerAI::play()
 		{
 			while (true)
 			{
-				int x = (rand() % 3) - 1 + boardPtr->getTempX();
-				int y = (rand() % 3) - 1 + boardPtr->getTempY();
+				int x = (rand() % 3) - 1 + pBoard->getTempX();
+				int y = (rand() % 3) - 1 + pBoard->getTempY();
 
-				if (boardPtr->getTableData(x, y) == Chess::EMPTY && x < Board::LARGE && y < Board::LARGE && x >= 0 && y >= 0)
+				if (pBoard->getTableData(x, y) == Chess::EMPTY && x < Board::LARGE && y < Board::LARGE && x >= 0 && y >= 0)
 				{
-					boardPtr->play(chess, x, y);
+					pBoard->play(chess, x, y);
 					break;
 				}
 			}
 		}
-		else { boardPtr->play(chess, Board::LARGE / 2, Board::LARGE / 2); }
+		else { pBoard->play(chess, Board::LARGE / 2, Board::LARGE / 2); }
 	}
-	else { boardPtr->play(chess, bestPoint.x, bestPoint.y); }
+	else { pBoard->play(chess, bestPoint.x, bestPoint.y); }
 
 	maxScore = 0;
 }

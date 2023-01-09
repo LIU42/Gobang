@@ -137,17 +137,17 @@ void MainGame::events()
 				int mouseX = event.motion.x;
 				int mouseY = event.motion.y;
 
-				if (mouseX >= REGION_BORDER && mouseX <= SCREEN_WIDTH - REGION_BORDER && mouseY >= REGION_BORDER && mouseY <= SCREEN_WIDTH - REGION_BORDER)
-				{
-					int x = (mouseX - BORDER - BLOCK_SIZE / 2) / BLOCK_SIZE;
-					int y = (mouseY - BORDER - BLOCK_SIZE / 2) / BLOCK_SIZE;
+				if (mouseX < REGION_BORDER || mouseX > SCREEN_WIDTH - REGION_BORDER) { continue; }
+				if (mouseY < REGION_BORDER || mouseY > SCREEN_WIDTH - REGION_BORDER) { continue; }
 
-					if (board.getTableData(x, y) == Chess::EMPTY && turn == player.getSide())
-					{
-						player.play(x, y);
-						turnSide();
-						gameover();
-					}
+				int x = (mouseX - BORDER - BLOCK_SIZE / 2) / BLOCK_SIZE;
+				int y = (mouseY - BORDER - BLOCK_SIZE / 2) / BLOCK_SIZE;
+
+				if (board.getTableData(x, y) == Chess::EMPTY && turn == player.getSide())
+				{
+					player.play(x, y);
+					turnSide();
+					gameover();
 				}
 			}
 			else if (status == OVER)
@@ -182,12 +182,12 @@ void MainGame::displayChess()
 	if (status == OVER)
 	{
 		LineData lineData = board.getLineData(tempX, tempY, false);
-		WinData winData = board.getWinData(lineData);
+		LinkData linkData = board.getLinkData(lineData);
 
-		for (int i = 0; i < board.WIN_CHESS_COUNT; i++)
+		for (int i = 0; i < board.LINK_COUNT; i++)
 		{
-			rect.x = BORDER + (int)(BLOCK_SIZE * (winData[i].x + 0.5));
-			rect.y = BORDER + (int)(BLOCK_SIZE * (winData[i].y + 0.5));
+			rect.x = BORDER + (int)(BLOCK_SIZE * (linkData[i].x + 0.5));
+			rect.y = BORDER + (int)(BLOCK_SIZE * (linkData[i].y + 0.5));
 
 			SDL_BlitSurface(image.alert, NULL, image.surface, &rect);
 		}
