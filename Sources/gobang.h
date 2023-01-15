@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+
 #include <Windows.h>
 #include <time.h>
 
@@ -60,7 +61,7 @@ class MainGame
 		int turnCount;
 
 	private:
-		SDL_RWops* getResource(HINSTANCE, LPCWSTR, LPCWSTR);
+		SDL_RWops* getResource(LPCWSTR, LPCWSTR);
 		SDL_Surface* loadSurface(int);
 
 	private:

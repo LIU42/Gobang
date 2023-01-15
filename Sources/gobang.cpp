@@ -1,16 +1,16 @@
 #include "gobang.h"
 
-SDL_RWops* MainGame::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
+SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 {
-	HRSRC hRsrc = FindResource(hInst, name, type);
-	DWORD size = SizeofResource(hInst, hRsrc);
-	LPVOID data = LockResource(LoadResource(hInst, hRsrc));
+	HRSRC hRsrc = FindResource(hInstance, name, type);
+	DWORD size = SizeofResource(hInstance, hRsrc);
+	LPVOID data = LockResource(LoadResource(hInstance, hRsrc));
 	return SDL_RWFromConstMem(data, size);
 }
 
 SDL_Surface* MainGame::loadSurface(int id)
 {
-	SDL_RWops* src = getResource(hInstance, MAKEINTRESOURCE(id), TEXT("PNG"));
+	SDL_RWops* src = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
 	SDL_Surface* originSurface = IMG_LoadPNG_RW(src);
 	SDL_Surface* convertSurface = SDL_ConvertSurface(originSurface, image.format, NULL);
 	SDL_FreeSurface(originSurface);
@@ -29,7 +29,7 @@ void MainGame::initWindow()
 void MainGame::loadFont()
 {
 	TTF_Init();
-	font = TTF_OpenFontRW(getResource(hInstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
+	font = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
 void MainGame::loadImage()
