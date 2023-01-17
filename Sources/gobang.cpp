@@ -2,9 +2,10 @@
 
 SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 {
-	HRSRC hRsrc = FindResource(hInstance, name, type);
-	DWORD size = SizeofResource(hInstance, hRsrc);
-	LPVOID data = LockResource(LoadResource(hInstance, hRsrc));
+	HINSTANCE hInst = sysInfo.info.win.hinstance;
+	HRSRC hRsrc = FindResource(hInst, name, type);
+	DWORD size = SizeofResource(hInst, hRsrc);
+	LPVOID data = LockResource(LoadResource(hInst, hRsrc));
 	return SDL_RWFromConstMem(data, size);
 }
 
@@ -21,15 +22,16 @@ SDL_Surface* MainGame::loadSurface(int id)
 void MainGame::initWindow()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	hInstance = GetModuleHandle(0);
-	window = SDL_CreateWindow("Gobang", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	SDL_VERSION(&sysInfo.version);
+	window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	screen = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+	SDL_GetWindowWMInfo(window, &sysInfo);
 }
 
 void MainGame::loadFont()
 {
 	TTF_Init();
-	font = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
+	font.info = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
 void MainGame::loadImage()
@@ -53,7 +55,7 @@ void MainGame::freeImage()
 
 void MainGame::freeFont()
 {
-	TTF_CloseFont(font);
+	TTF_CloseFont(font.info);
 }
 
 void MainGame::close()
@@ -164,7 +166,7 @@ void MainGame::displayText(const char* text, int x, int y)
 	static SDL_Surface* surface;
 	static SDL_Rect rect;
 
-	surface = TTF_RenderText_Blended(font, text, { 0, 0, 0 });
+	surface = TTF_RenderText_Blended(font.info, text, BLACK);
 	rect.x = x;
 	rect.y = y;
 

@@ -2,10 +2,9 @@
 #define __GOBANG_H__ 
 
 #include <SDL.h>
+#include <SDL_syswm.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-
-#include <Windows.h>
 #include <time.h>
 
 #include "board.h"
@@ -24,8 +23,16 @@ struct Image
 	SDL_Surface* alert;
 };
 
+struct Font
+{
+	TTF_Font* info;
+};
+
 class MainGame
 {
+	public:
+		static constexpr auto TITLE = "Gobang";
+
 	public:
 		static const int SCREEN_WIDTH = 620;
 		static const int SCREEN_HEIGHT = 650;
@@ -41,15 +48,20 @@ class MainGame
 		static const int BORDER = 10;
 		static const int REGION_BORDER = 25;
 
+	public:
+		static constexpr SDL_Color BLACK = { 0, 0, 0 };
+
 	private:
-		HINSTANCE hInstance;
 		SDL_Window* window;
+		SDL_SysWMinfo sysInfo;
 		SDL_Rect screen;
 		SDL_Event event;
-		TTF_Font* font;
 
 	private:
 		Image image;
+		Font font;
+
+	private:
 		Board board;
 		Player player;
 		PlayerAI playerAI;
