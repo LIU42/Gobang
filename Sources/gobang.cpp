@@ -5,11 +5,12 @@ SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 	HINSTANCE hInst = sysInfo.info.win.hinstance;
 	HRSRC hRsrc = FindResource(hInst, name, type);
 	DWORD size = SizeofResource(hInst, hRsrc);
-	LPVOID data = LockResource(LoadResource(hInst, hRsrc));
+	HGLOBAL hGlobal = LoadResource(hInst, hRsrc);
+	LPVOID data = LockResource(hGlobal);
 	return SDL_RWFromConstMem(data, size);
 }
 
-SDL_Surface* MainGame::loadSurface(int id)
+SDL_Surface* MainGame::loadSurface(Uint32 id)
 {
 	SDL_RWops* src = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
 	SDL_Surface* originSurface = IMG_LoadPNG_RW(src);

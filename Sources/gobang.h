@@ -74,7 +74,7 @@ class MainGame
 
 	private:
 		SDL_RWops* getResource(LPCWSTR, LPCWSTR);
-		SDL_Surface* loadSurface(int);
+		SDL_Surface* loadSurface(Uint32);
 
 	private:
 		void freeImage();
