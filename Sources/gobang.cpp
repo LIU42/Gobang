@@ -155,7 +155,10 @@ void MainGame::events()
 {
 	while (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT) { status = EXIT; }
+		if (event.type == SDL_QUIT)
+		{
+			status = EXIT;
+		}
 		if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (status == PLAYING)
@@ -272,4 +275,15 @@ void MainGame::display()
 	displayChess();
 	displayInfo();
 	SDL_UpdateWindowSurface(window);
+}
+
+void MainGame::delay(Uint32 startTick, Uint32 endTick)
+{
+	int deltaTick = endTick - startTick;
+	int delayTick = 1000 / GAME_FPS - deltaTick;
+
+	if (delayTick > 0)
+	{
+		SDL_Delay(delayTick);
+	}
 }

@@ -105,5 +105,6 @@ class MainGame
 		void update();
 		void events();
 		void display();
+		void delay(Uint32, Uint32);
 };
 #endif
