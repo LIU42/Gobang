@@ -30,7 +30,7 @@ int Board::getTempY()
 
 bool Board::isBlackWin(LineData& lineData)
 {
-	for (string line : lineData)
+	for (string& line : lineData)
 	{
 		if (line.find("BBBBB") != line.npos)
 		{
@@ -42,7 +42,7 @@ bool Board::isBlackWin(LineData& lineData)
 
 bool Board::isWhiteWin(LineData& lineData)
 {
-	for (string line : lineData)
+	for (string& line : lineData)
 	{
 		if (line.find("WWWWW") != line.npos)
 		{

@@ -12,33 +12,38 @@ SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 
 SDL_Surface* MainGame::loadSurface(Uint32 id)
 {
-	SDL_RWops* src = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
-	SDL_Surface* originSurface = IMG_LoadPNG_RW(src);
-	SDL_Surface* convertSurface = SDL_ConvertSurface(originSurface, image.format, NULL);
-	SDL_FreeSurface(originSurface);
-	SDL_FreeRW(src);
-	return convertSurface;
+	SDL_RWops* pResource = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
+	SDL_Surface* originalSurface = IMG_LoadPNG_RW(pResource);
+	SDL_Surface* convertedSurface = SDL_ConvertSurface(originalSurface, format, NULL);
+	SDL_FreeSurface(originalSurface);
+	SDL_FreeRW(pResource);
+	return convertedSurface;
+}
+
+void MainGame::initEnvironment()
+{
+	SDL_Init(SDL_INIT_EVERYTHING);
+	IMG_Init(IMG_INIT_PNG);
+	TTF_Init();
+	SDL_VERSION(&sysInfo.version);
 }
 
 void MainGame::initWindow()
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
-	SDL_VERSION(&sysInfo.version);
 	window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	screen = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+	surface = SDL_GetWindowSurface(window);
+	format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+	screenRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	SDL_GetWindowWMInfo(window, &sysInfo);
 }
 
 void MainGame::loadFont()
 {
-	TTF_Init();
 	font.info = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
 void MainGame::loadImage()
 {
-	image.format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
-	image.surface = SDL_GetWindowSurface(window);
 	image.background = loadSurface(IDB_PNG3);
 	image.blackChess = loadSurface(IDB_PNG2);
 	image.whiteChess = loadSurface(IDB_PNG4);
@@ -47,7 +52,6 @@ void MainGame::loadImage()
 
 void MainGame::freeImage()
 {
-	SDL_FreeFormat(image.format);
 	SDL_FreeSurface(image.background);
 	SDL_FreeSurface(image.blackChess);
 	SDL_FreeSurface(image.whiteChess);
@@ -59,14 +63,25 @@ void MainGame::freeFont()
 	TTF_CloseFont(font.info);
 }
 
-void MainGame::close()
+void MainGame::closeWindow()
 {
 	SDL_DestroyWindow(window);
-	freeImage();
-	freeFont();
+	SDL_FreeFormat(format);
+}
+
+void MainGame::closeEnvironment()
+{
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
+}
+
+void MainGame::close()
+{
+	freeImage();
+	freeFont();
+	closeWindow();
+	closeEnvironment();
 }
 
 void MainGame::initGame()
@@ -81,6 +96,14 @@ void MainGame::initGame()
 	turn = Side::BLACK;
 	turnCount = 0;
 	winner = Side::NOBODY;
+}
+
+Uint32 MainGame::getDelayTick(Uint32 startTick, Uint32 endTick)
+{
+	int deltaTick = endTick - startTick;
+	int delayTick = 1000 / GAME_FPS - deltaTick;
+
+	return (delayTick > 0) ? delayTick : 0;
 }
 
 bool MainGame::isRunning()
@@ -164,20 +187,20 @@ void MainGame::events()
 
 void MainGame::displayText(const char* text, int x, int y)
 {
-	static SDL_Surface* surface;
-	static SDL_Rect rect;
+	static SDL_Surface* textSurface;
+	static SDL_Rect textRect;
 
-	surface = TTF_RenderText_Blended(font.info, text, BLACK);
-	rect.x = x;
-	rect.y = y;
+	textSurface = TTF_RenderText_Blended(font.info, text, BLACK);
+	textRect.x = x;
+	textRect.y = y;
 
-	SDL_BlitSurface(surface, NULL, image.surface, &rect);
-	SDL_FreeSurface(surface);
+	SDL_BlitSurface(textSurface, NULL, surface, &textRect);
+	SDL_FreeSurface(textSurface);
 }
 
 void MainGame::displayChess()
 {
-	static SDL_Rect rect;
+	static SDL_Rect chessRect;
 
 	int tempX = board.getTempX();
 	int tempY = board.getTempY();
@@ -189,30 +212,30 @@ void MainGame::displayChess()
 
 		for (int i = 0; i < board.LINK_COUNT; i++)
 		{
-			rect.x = BORDER + (int)(BLOCK_SIZE * (linkData[i].x + 0.5));
-			rect.y = BORDER + (int)(BLOCK_SIZE * (linkData[i].y + 0.5));
+			chessRect.x = BORDER + (int)(BLOCK_SIZE * (linkData[i].x + 0.5));
+			chessRect.y = BORDER + (int)(BLOCK_SIZE * (linkData[i].y + 0.5));
 
-			SDL_BlitSurface(image.alert, NULL, image.surface, &rect);
+			SDL_BlitSurface(image.alert, NULL, surface, &chessRect);
 		}
 	}
 	else if (turnCount != 0)
 	{
-		rect.x = BORDER + (int)(BLOCK_SIZE * (tempX + 0.5));
-		rect.y = BORDER + (int)(BLOCK_SIZE * (tempY + 0.5));
+		chessRect.x = BORDER + (int)(BLOCK_SIZE * (tempX + 0.5));
+		chessRect.y = BORDER + (int)(BLOCK_SIZE * (tempY + 0.5));
 
-		SDL_BlitSurface(image.alert, NULL, image.surface, &rect);
+		SDL_BlitSurface(image.alert, NULL, surface, &chessRect);
 	}
 	for (int x = 0; x < board.LARGE; x++)
 	{
 		for (int y = 0; y < board.LARGE; y++)
 		{
-			rect.x = BORDER + (int)(BLOCK_SIZE * (x + 0.5));
-			rect.y = BORDER + (int)(BLOCK_SIZE * (y + 0.5));
+			chessRect.x = BORDER + (int)(BLOCK_SIZE * (x + 0.5));
+			chessRect.y = BORDER + (int)(BLOCK_SIZE * (y + 0.5));
 
 			switch (board.getTableData(x, y))
 			{
-				case Chess::BLACK: SDL_BlitSurface(image.blackChess, NULL, image.surface, &rect); break;
-				case Chess::WHITE: SDL_BlitSurface(image.whiteChess, NULL, image.surface, &rect); break;
+				case Chess::BLACK: SDL_BlitSurface(image.blackChess, NULL, surface, &chessRect); break;
+				case Chess::WHITE: SDL_BlitSurface(image.whiteChess, NULL, surface, &chessRect); break;
 			}
 		}
 	}
@@ -245,7 +268,7 @@ void MainGame::displayInfo()
 
 void MainGame::display()
 {
-	SDL_BlitSurface(image.background, NULL, image.surface, &screen);
+	SDL_BlitSurface(image.background, NULL, surface, &screenRect);
 	displayChess();
 	displayInfo();
 	SDL_UpdateWindowSurface(window);

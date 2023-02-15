@@ -48,7 +48,7 @@ void PlayerAI::clearFormatData()
 
 void PlayerAI::getFormatData(LineData& lineData)
 {
-	for (string line : lineData)
+	for (string& line : lineData)
 	{
 		bool isFindRushFour = false;
 		bool isFindEndFour = false;
