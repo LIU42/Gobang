@@ -53,7 +53,7 @@ class MainGame
 		SDL_Window* window;
 		SDL_Surface* surface;
 		SDL_PixelFormat* format;
-		SDL_SysWMinfo sysInfo;
+		SDL_SysWMinfo windowInfo;
 		SDL_Rect screenRect;
 		SDL_Event event;
 
@@ -88,9 +88,6 @@ class MainGame
 		void displayText(const char*, int, int);
 		void displayChess();
 		void displayInfo();
-
-	public:
-		Uint32 getDelayTick(Uint32, Uint32);
 
 	public:
 		void initEnvironment();

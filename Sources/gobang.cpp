@@ -2,7 +2,7 @@
 
 SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 {
-	HINSTANCE hInst = sysInfo.info.win.hinstance;
+	HINSTANCE hInst = windowInfo.info.win.hinstance;
 	HRSRC hRsrc = FindResource(hInst, name, type);
 	DWORD size = SizeofResource(hInst, hRsrc);
 	HGLOBAL hGlobal = LoadResource(hInst, hRsrc);
@@ -25,7 +25,7 @@ void MainGame::initEnvironment()
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_PNG);
 	TTF_Init();
-	SDL_VERSION(&sysInfo.version);
+	SDL_VERSION(&windowInfo.version);
 }
 
 void MainGame::initWindow()
@@ -34,7 +34,7 @@ void MainGame::initWindow()
 	surface = SDL_GetWindowSurface(window);
 	format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
 	screenRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-	SDL_GetWindowWMInfo(window, &sysInfo);
+	SDL_GetWindowWMInfo(window, &windowInfo);
 }
 
 void MainGame::loadFont()
@@ -96,14 +96,6 @@ void MainGame::initGame()
 	turn = Side::BLACK;
 	turnCount = 0;
 	winner = Side::NOBODY;
-}
-
-Uint32 MainGame::getDelayTick(Uint32 startTick, Uint32 endTick)
-{
-	int deltaTick = endTick - startTick;
-	int delayTick = 1000 / GAME_FPS - deltaTick;
-
-	return (delayTick > 0) ? delayTick : 0;
 }
 
 bool MainGame::isRunning()
