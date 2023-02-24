@@ -15,15 +15,15 @@ enum Status { PLAYING, OVER, EXIT };
 
 struct Images
 {
-	SDL_Surface* background;
-	SDL_Surface* blackChess;
-	SDL_Surface* whiteChess;
-	SDL_Surface* alert;
+	SDL_Surface* pBackground;
+	SDL_Surface* pBlackChess;
+	SDL_Surface* pWhiteChess;
+	SDL_Surface* pAlert;
 };
 
 struct Fonts
 {
-	TTF_Font* info;
+	TTF_Font* pInfo;
 };
 
 class MainGame
@@ -50,16 +50,16 @@ class MainGame
 		static constexpr SDL_Color BLACK = { 0, 0, 0 };
 
 	private:
-		SDL_Window* window;
-		SDL_Surface* surface;
-		SDL_PixelFormat* format;
+		SDL_Window* pWindow;
+		SDL_Surface* pSurface;
+		SDL_PixelFormat* pFormat;
 		SDL_SysWMinfo windowInfo;
 		SDL_Rect screenRect;
 		SDL_Event event;
 
 	private:
-		Images image;
-		Fonts font;
+		Images images;
+		Fonts fonts;
 
 	private:
 		Board board;
@@ -77,10 +77,20 @@ class MainGame
 		SDL_Surface* loadSurface(Uint32);
 
 	private:
+		void getVersion();
+		void initSystem();
+		void initWindow();
+		void initGame();
+		void loadImage();
+		void loadFont();
+
+	private:
 		void freeImage();
 		void freeFont();
 		void closeWindow();
-		void closeEnvironment();
+		void closeSystem();
+
+	private:
 		void turnSide();
 		void gameover();
 
@@ -90,12 +100,8 @@ class MainGame
 		void displayInfo();
 
 	public:
-		void initEnvironment();
-		void initWindow();
-		void initGame();
-		void loadImage();
-		void loadFont();
-		void close();
+		MainGame();
+		~MainGame();
 
 	public:
 		bool isRunning();
