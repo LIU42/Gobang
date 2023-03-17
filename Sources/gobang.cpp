@@ -127,12 +127,8 @@ void MainGame::gameover()
 
 void MainGame::displayText(const char* pText, int x, int y)
 {
-	static SDL_Surface* pTextSurface;
-	static SDL_Rect textRect;
-
-	pTextSurface = TTF_RenderText_Blended(fonts.pInfo, pText, BLACK);
-	textRect.x = x;
-	textRect.y = y;
+	SDL_Surface* pTextSurface = TTF_RenderText_Blended(fonts.pInfo, pText, BLACK);
+	SDL_Rect textRect = { x, y, 0, 0 };
 
 	SDL_BlitSurface(pTextSurface, NULL, pSurface, &textRect);
 	SDL_FreeSurface(pTextSurface);
@@ -291,8 +287,5 @@ void MainGame::delay(Uint32 startTick, Uint32 endTick)
 	int deltaTick = endTick - startTick;
 	int delayTick = 1000 / GAME_FPS - deltaTick;
 
-	if (delayTick > 0)
-	{
-		SDL_Delay(delayTick);
-	}
+	SDL_Delay((delayTick > 0) ? delayTick : 0);
 }
