@@ -39,7 +39,7 @@ class PlayerAI : public Player
 	private:
 		Format format;
 		Point bestPoint;
-		int maxScore;
+		int maxLevel;
 
 	private:
 		void identify(LineData&);

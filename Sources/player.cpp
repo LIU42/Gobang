@@ -20,7 +20,7 @@ Side Player::getSide()
 void PlayerAI::init(Side side, Chess chess, Board* pBoard)
 {
 	Player::init(side, chess, pBoard);
-	maxScore = 0;
+	maxLevel = 0;
 }
 
 void PlayerAI::identify(LineData& lineData)
@@ -179,42 +179,131 @@ void PlayerAI::getFormatData(LineData& lineData)
 
 void PlayerAI::analysisData(int x, int y)
 {
-	int score = 0;
+	int level = 0;
 
-	if (format.rushFive > 0)													{ score = 30; }
-	else if (format.endFour > 1)												{ score = 29; }
-	else if (format.endFour > 0 && format.rushFour > 0)							{ score = 28; }
-	else if (format.endFour > 0 && format.endThree > 0)							{ score = 27; }
-	else if (format.endFour > 0 && format.aliveThree > 0)						{ score = 26; }
-	else if (format.endFour > 0)												{ score = 25; }
-	else if (format.aliveFour > 0)												{ score = 24; }
-	else if (format.rushFour > 1)												{ score = 23; }
-	else if (format.rushFour > 0 && format.aliveThree > 0)						{ score = 22; }
-	else if (format.rushFour > 0 && format.endThree > 0)						{ score = 21; }
-	else if (format.endThree > 1)												{ score = 20; }
-	else if (format.endThree > 0 && format.preFour > 1)							{ score = 19; }
-	else if (format.endThree > 0 && format.preFour > 0 && format.preThree > 0)	{ score = 18; }
-	else if (format.endThree > 0 && format.aliveThree > 0)						{ score = 17; }
-	else if (format.endThree > 0)												{ score = 16; }
-	else if (format.preFour > 1)												{ score = 15; }
-	else if (format.preFour > 0 && format.preThree > 0)							{ score = 14; }
-	else if (format.aliveThree > 1)												{ score = 13; }
-	else if (format.aliveThree > 0 && format.linkTwo > 2)						{ score = 12; }
-	else if (format.aliveThree > 0 && format.linkTwo > 1)						{ score = 11; }
-	else if (format.aliveThree > 0 && format.linkTwo > 0)						{ score = 10; }
-	else if (format.aliveThree > 0)												{ score = 9; }
-	else if (format.preThree > 1)												{ score = 8; }
-	else if (format.rushFour > 0 && format.linkTwo > 2)							{ score = 7; }
-	else if (format.rushFour > 0 && format.linkTwo > 1)							{ score = 6; }
-	else if (format.rushFour > 0 && format.linkTwo > 0)							{ score = 5; }
-	else if (format.rushFour > 0)												{ score = 4; }
-	else if (format.aliveTwo > 2)												{ score = 3; }
-	else if (format.aliveTwo > 1)												{ score = 2; }
-	else if (format.aliveTwo > 0)												{ score = 1; }
-
-	if (score > maxScore)
+	if (format.rushFive > 0)
 	{
-		maxScore = score;
+		level = 30;
+	}
+	else if (format.endFour > 1)												
+	{
+		level = 29;
+	}
+	else if (format.endFour > 0 && format.rushFour > 0)							
+	{
+		level = 28;
+	}
+	else if (format.endFour > 0 && format.endThree > 0)							
+	{
+		level = 27;
+	}
+	else if (format.endFour > 0 && format.aliveThree > 0)						
+	{
+		level = 26;
+	}
+	else if (format.endFour > 0)												
+	{
+		level = 25;
+	}
+	else if (format.aliveFour > 0)												
+	{
+		level = 24;
+	}
+	else if (format.rushFour > 1)												
+	{
+		level = 23;
+	}
+	else if (format.rushFour > 0 && format.aliveThree > 0)						
+	{
+		level = 22;
+	}
+	else if (format.rushFour > 0 && format.endThree > 0)						
+	{
+		level = 21;
+	}
+	else if (format.endThree > 1)												
+	{
+		level = 20;
+	}
+	else if (format.endThree > 0 && format.preFour > 1)							
+	{
+		level = 19;
+	}
+	else if (format.endThree > 0 && format.preFour > 0 && format.preThree > 0)	
+	{
+		level = 18;
+	}
+	else if (format.endThree > 0 && format.aliveThree > 0)						
+	{
+		level = 17;
+	}
+	else if (format.endThree > 0)												
+	{
+		level = 16;
+	}
+	else if (format.preFour > 1)												
+	{
+		level = 15;
+	}
+	else if (format.preFour > 0 && format.preThree > 0)							
+	{
+		level = 14;
+	}
+	else if (format.aliveThree > 1)												
+	{
+		level = 13;
+	}
+	else if (format.aliveThree > 0 && format.linkTwo > 2)						
+	{
+		level = 12;
+	}
+	else if (format.aliveThree > 0 && format.linkTwo > 1)						
+	{
+		level = 11;
+	}
+	else if (format.aliveThree > 0 && format.linkTwo > 0)						
+	{
+		level = 10;
+	}
+	else if (format.aliveThree > 0)												
+	{
+		level = 9;
+	}
+	else if (format.preThree > 1)												
+	{
+		level = 8;
+	}
+	else if (format.rushFour > 0 && format.linkTwo > 2)							
+	{
+		level = 7;
+	}
+	else if (format.rushFour > 0 && format.linkTwo > 1)							
+	{
+		level = 6;
+	}
+	else if (format.rushFour > 0 && format.linkTwo > 0)							
+	{
+		level = 5;
+	}
+	else if (format.rushFour > 0)												
+	{
+		level = 4;
+	}
+	else if (format.aliveTwo > 2)												
+	{
+		level = 3;
+	}
+	else if (format.aliveTwo > 1)												
+	{
+		level = 2;
+	}
+	else if (format.aliveTwo > 0)												
+	{
+		level = 1;
+	}
+	if (level > maxLevel)
+	{
+		maxLevel = level;
 		bestPoint.x = x;
 		bestPoint.y = y;
 	}
@@ -241,25 +330,26 @@ void PlayerAI::analysis()
 
 void PlayerAI::play()
 {
-	if (maxScore == 0)
+	if (maxLevel != 0)
 	{
-		if (side == Side::WHITE)
-		{
-			while (true)
-			{
-				int x = (rand() % 3) - 1 + pBoard->getTempX();
-				int y = (rand() % 3) - 1 + pBoard->getTempY();
-
-				if (pBoard->getTableData(x, y) == Chess::EMPTY && x < Board::LARGE && y < Board::LARGE && x >= 0 && y >= 0)
-				{
-					pBoard->play(chess, x, y);
-					break;
-				}
-			}
-		}
-		else { pBoard->play(chess, Board::LARGE / 2, Board::LARGE / 2); }
+		pBoard->play(chess, bestPoint.x, bestPoint.y);
+		maxLevel = 0;
+		return;
 	}
-	else { pBoard->play(chess, bestPoint.x, bestPoint.y); }
+	if (side == Side::BLACK)
+	{
+		pBoard->play(chess, Board::LARGE / 2, Board::LARGE / 2);
+		return;
+	}
+	while (true)
+	{
+		int x = (rand() % 3) - 1 + pBoard->getTempX();
+		int y = (rand() % 3) - 1 + pBoard->getTempY();
 
-	maxScore = 0;
+		if (pBoard->getTableData(x, y) == Chess::EMPTY && x < Board::LARGE && y < Board::LARGE && x >= 0 && y >= 0)
+		{
+			pBoard->play(chess, x, y);
+			return;
+		}
+	}
 }

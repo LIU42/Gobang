@@ -10,9 +10,9 @@ SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 	return SDL_RWFromConstMem(data, size);
 }
 
-SDL_Surface* MainGame::loadSurface(Uint32 id)
+SDL_Surface* MainGame::loadSurface(Uint32 resourceID)
 {
-	SDL_RWops* pResource = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
+	SDL_RWops* pResource = getResource(MAKEINTRESOURCE(resourceID), TEXT("PNG"));
 	SDL_Surface* pOriginalSurface = IMG_LoadPNG_RW(pResource);
 	SDL_Surface* pConvertedSurface = SDL_ConvertSurface(pOriginalSurface, pFormat, NULL);
 	SDL_FreeSurface(pOriginalSurface);

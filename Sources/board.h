@@ -22,8 +22,8 @@ struct Point
 	int y;
 };
 
-typedef vector <string> LineData;
-typedef vector <Point> LinkData;
+typedef vector<string> LineData;
+typedef vector<Point> LinkData;
 
 class Board
 {
